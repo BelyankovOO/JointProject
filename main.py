@@ -36,8 +36,8 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    hero.shoot(all_sprites, weapons_sprites)    
+                if event.key == pygame.K_x:
+                    hero.shoot(all_sprites, weapons_sprites)
 
         screen.blit(background, (0,0)) # Каждую итерацию необходимо всё перерисовывать
           
@@ -49,9 +49,14 @@ def main():
             all_sprites.add(mob)
             enemys_sprites.add(mob)
 
-        player_damage = pygame.sprite.spritecollide(hero, enemys_sprites, False)
-        if player_damage: #закоментить что не было конца игры
-            running = False
+        hero_bullets_hits = pygame.sprite.spritecollide(hero, enemys_sprites, False)
+        
+        if hero_bullets_hits :
+            if hero.isReflecting():
+                for bullet in hero_bullets_hits :
+                    bullet.reflect_direction(hero.getCenter())
+            else: #закоментить что не было конца игры
+                running = False
 
         all_sprites.draw(screen)
 
