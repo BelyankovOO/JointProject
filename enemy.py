@@ -1,53 +1,48 @@
 import pygame
 import system
 import random
-import math
+import enemy_weapon
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((system.ENEMY_WIDTH, system.ENEMY_HEIGHT))
-        self.image.fill(pygame.Color(system.ENEMY_COLOR))
-        self.x = random.randrange(system.WIN_WIDTH - system.ENEMY_WIDTH)
-        self.y = random.randrange(0+system.ENEMY_HEIGHT, system.WIN_HEIGHT-system.ENEMY_HEIGHT)
-        self.rect = pygame.Rect(self.x, self.y, system.ENEMY_WIDTH, system.ENEMY_HEIGHT)
-        self.speed_x = random.randrange(-8, 8)
-        self.speed_y = random.randrange(-8, 8) 
+	def __init__(self, all_sprites, enemy_sprites, enemy_bullet_sprites):
+		pygame.sprite.Sprite.__init__(self)
+		self.image = pygame.Surface((system.ENEMY_WIDTH, system.ENEMY_HEIGHT))
+		self.image.fill(pygame.Color(system.ENEMY_COLOR))
+		self.all_sprites = all_sprites
+		self.enemy_bullet_sprites = enemy_bullet_sprites
+		self.x = random.choice([0, system.WIN_WIDTH])
+		self.y = -100
+		if self.x == 0:
+			self.rect = pygame.Rect(self.x, self.y, system.ENEMY_WIDTH, system.ENEMY_HEIGHT)
+		elif self.x == system.WIN_WIDTH:
+			self.rect = pygame.Rect(system.WIN_WIDTH-system.ENEMY_WIDTH, self.y, system.ENEMY_WIDTH, system.ENEMY_HEIGHT)    
+		self.speed_y = random.randrange(1, 8)
+		self.stop_position = random.randrange(0, system.WIN_HEIGHT-system.ENEMY_HEIGHT)
+		self.kill_flag = self.two_enemy_in_one_stop_position(enemy_sprites, self.stop_position)
+		self.last_update = pygame.time.get_ticks()
+		self.number_of_bullets = 4 
 
-    def update(self):
-        self.crossing()
-        self.rect.x += self.speed_x
-        self.rect.y += self.speed_y
+	def update(self):
+		if self.kill_flag:
+			self.kill()
+		now = pygame.time.get_ticks()
+		if now - self.last_update > system.ENEMY_WEAPON_COOLDOWN and self.number_of_bullets > 0:
+			self.last_update = now
+			self.number_of_bullets -= 1
+			self.shoot()
+		self.rect.y += self.speed_y
+		if self.rect.top > self.stop_position:
+			self.rect.top = self.stop_position
+			self.speed_y = 0
 
-
-    def crossing(self):
-        if self.rect.top < 0:
-            self.rect.top = 0
-            self.speed_y = -self.speed_y
-        if self.rect.bottom > system.WIN_HEIGHT:
-            self.rect.bottom = system.WIN_HEIGHT
-            self.speed_y = -self.speed_y
-        if self.rect.right < 0:
-            self.rect.right = 0
-            self.speed_x = -self.speed_x
-        if self.rect.left > system.WIN_WIDTH:
-            self.rect.left = system.WIN_WIDTH
-            self.speed_x = -self.speed_x             
-
-    def reflect_direction(self, colide_point_center):
-        L = [self.speed_x, self.speed_y]
-        norm = [self.rect.x-colide_point_center[0], self.rect.y-colide_point_center[1]]
-        s_norm = math.sqrt(norm[0]**2+norm[1]**2)
-        s_L = math.sqrt(L[0]**2+L[1]**2)
-        L[0] = L[0]/s_L
-        L[1] = L[1]/s_L
-        norm[0] = norm[0]/s_norm
-        norm[1] = norm[1]/s_norm
-        scalarNL = L[0]*norm[0] + L[1]*norm[1]
-        self.speed_x = s_L*(L[0]-2*scalarNL*norm[0])
-        self.speed_y = s_L*(L[1]-2*scalarNL*norm[1])
-    
-    #def draw(self, screen):
-     #   screen.blit(self.image, (self.rect.x, self.rect.y))      
+	def two_enemy_in_one_stop_position(self, enemy_sprites, stop_position):
+		for enemy in enemy_sprites:
+			if self.stop_position in range(enemy.stop_position-system.ENEMY_HEIGHT, enemy.stop_position+system.ENEMY_HEIGHT) and self.x == enemy.x:
+				return True
+		return False
 
 
+	def shoot(self):
+		bullet = enemy_weapon.EnemyWeapon(self.rect.x, self.rect.centery)
+		self.all_sprites.add(bullet)
+		self.enemy_bullet_sprites.add(bullet)	
