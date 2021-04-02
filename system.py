@@ -30,4 +30,3 @@ WEAPON_COLOR = "#0000ff"
 WEAPON_SPEED = 3
 
 IMAGES_FOLDER = "./images/"
-

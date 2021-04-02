@@ -47,12 +47,5 @@ class Enemy(pygame.sprite.Sprite):
 		self.all_sprites.add(bullet)
 		self.enemy_bullet_sprites.add(bullet)	
 
-			
-					
-    			
-
-    			
-
-    
 
 

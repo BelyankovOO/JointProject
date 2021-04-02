@@ -86,4 +86,4 @@ class Player(pygame.sprite.Sprite):
 
 	def getCenter(self):
 		return (self.rect.centerx, self.rect.centery)		                     
-   
+

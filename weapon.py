@@ -24,4 +24,3 @@ class Weapon(pygame.sprite.Sprite):
 		if self.rect.top < 0:
 			self.kill()
 		self.rect.inflate_ip(0,system.WEAPON_SPEED)
-  
