@@ -17,6 +17,7 @@ class EnemyWeapon(pygame.sprite.Sprite):
 		#self.image.fill(pygame.Color(system.ENEMY_WEAPON_COLOR))
 		#self.rect =  pygame.Rect(x, y, system.ENEMY_WEAPON_WIDTH, system.ENEMY_WEAPON_HEIGHT)
 		self.image = images['shuriken'][0]
+		self.mask = pygame.mask.from_surface(self.image)
 		self.rect = self.image.get_rect()
 		if x == 0:
 			self.speed_x = random.randrange(1, system.MAX_ENEMY_WEAPON_SPEED)
@@ -40,6 +41,7 @@ class EnemyWeapon(pygame.sprite.Sprite):
 		if (self.delta_time*self.velocity >= system.SHURIKEN_ROTATION):
 			self.image_num = (self.image_num+1)%5
 			self.image = images['shuriken'][self.image_num]
+			self.mask = pygame.mask.from_surface(self.image)
 			self.timer_last = now
 		self.crossing()
 		self.rect.y += self.speed_y

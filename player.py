@@ -2,15 +2,17 @@ import pygame
 import system
 import weapon
 
+image_reflect = pygame.image.load(system.IMAGES_FOLDER+"hero/hero_reflect.png")
+image_simple = pygame.image.load(system.IMAGES_FOLDER+"hero/hero.png")
+		
 class Player(pygame.sprite.Sprite):
 	def __init__(self,x,y):
 		pygame.sprite.Sprite.__init__(self)
 		#self.image = pygame.Surface((system.PLAYER_WIDTH, system.PLAYER_HEIGHT))
 		#self.image.fill(pygame.Color(system.PLAYER_COLOR))
 		#self.rect = pygame.Rect(x, y, system.PLAYER_WIDTH, system.PLAYER_HEIGHT)
-		self.image_reflect = pygame.image.load(system.IMAGES_FOLDER+"hero/hero_reflect.png")
-		self.image_simple = pygame.image.load(system.IMAGES_FOLDER+"hero/hero.png")
-		self.image = self.image_simple
+		self.image = image_simple
+		self.mask = pygame.mask.from_surface(self.image)
 		self.rect = self.image.get_rect()
 		self.speed_x = 0
 		self.speed_y = 0
@@ -33,9 +35,9 @@ class Player(pygame.sprite.Sprite):
 			if self.cooldowns[name] < 0:
 				self.cooldowns[name] = 0
 				if name=='reflect_time':
-					self.image = self.image_simple
+					self.image = image_simple
+					self.mask = pygame.mask.from_surface(self.image)
 		if not self.isReflecting():
-			self.image = self.image_simple
 			if keystate[pygame.K_UP]:
 				if self.on_ground:
 					self.speed_y = -system.PLAYER_JUMP
@@ -77,7 +79,8 @@ class Player(pygame.sprite.Sprite):
 
 	def reflect(self):
 		if (self.cooldowns['reflect_cd']==0):
-			self.image = self.image_reflect
+			self.image = image_reflect
+			self.mask = pygame.mask.from_surface(self.image)
 			self.cooldowns['reflect_cd']=system.PLAYER_REFLECT_CD
 			self.cooldowns['reflect_time']=system.PLAYER_REFLECTING_TIME
 

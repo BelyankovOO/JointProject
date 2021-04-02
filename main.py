@@ -53,7 +53,7 @@ def main():
 		screen.blit(update_fps(), (10,0))
 		all_sprites.update()
 
-		hero_bullets_hits = pygame.sprite.spritecollide(hero, enemy_bullet_sprites, False)
+		hero_bullets_hits = pygame.sprite.spritecollide(hero, enemy_bullet_sprites, False, collided=pygame.sprite.collide_mask)
 
 		if hero_bullets_hits :
 			if hero.isReflecting():
