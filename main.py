@@ -58,9 +58,14 @@ def main():
 		if hero_bullets_hits :
 			if hero.isReflecting():
 				for bullet in hero_bullets_hits :
-					bullet.reflect_direction(hero.getCenter())
+					if bullet.can_damage:
+						bullet.reflect_direction(hero.getCenter())
+						bullet.on_hit()
 			else: 
-				running = False
+				for bullet in hero_bullets_hits :
+					if bullet.can_damage:
+						running = False
+						break
 
 		all_sprites.draw(screen)
 

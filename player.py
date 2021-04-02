@@ -1,6 +1,7 @@
 import pygame
 import system
 import weapon
+import utility
 
 image_reflect = pygame.image.load(system.IMAGES_FOLDER+"hero/hero_reflect.png")
 image_simple = pygame.image.load(system.IMAGES_FOLDER+"hero/hero.png")
@@ -30,13 +31,7 @@ class Player(pygame.sprite.Sprite):
 		self.delta_time = now - self.timer_last;
 		self.timer_last = now
 		#tick cooldowns
-		for name in self.cooldowns:
-			self.cooldowns[name] -= self.delta_time
-			if self.cooldowns[name] < 0:
-				self.cooldowns[name] = 0
-				if name=='reflect_time':
-					self.image = image_simple
-					self.mask = pygame.mask.from_surface(self.image)
+		utility.cooldown_tick(self.cooldowns, self.delta_time, {'reflect_time' : self.reset_image})
 		if not self.isReflecting():
 			if keystate[pygame.K_UP]:
 				if self.on_ground:
@@ -77,6 +72,10 @@ class Player(pygame.sprite.Sprite):
 			weapon_sprites.add(weapon_x)      
 			self.cooldowns['shoot']=system.PLAYER_SHOOT_CD 
 
+	def reset_image(self):
+		self.image = image_simple
+		self.mask = pygame.mask.from_surface(self.image)
+	
 	def reflect(self):
 		if (self.cooldowns['reflect_cd']==0):
 			self.image = image_reflect
@@ -88,5 +87,6 @@ class Player(pygame.sprite.Sprite):
 		return self.cooldowns['reflect_time']>0
 
 	def getCenter(self):
-		return (self.rect.centerx, self.rect.centery)		                     
+		return (self.rect.centerx, self.rect.centery)
+
 
