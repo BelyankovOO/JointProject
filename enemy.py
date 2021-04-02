@@ -46,6 +46,3 @@ class Enemy(pygame.sprite.Sprite):
 		bullet = enemy_weapon.EnemyWeapon(self.rect.x, self.rect.centery)
 		self.all_sprites.add(bullet)
 		self.enemy_bullet_sprites.add(bullet)	
-
-
-

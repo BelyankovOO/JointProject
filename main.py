@@ -9,8 +9,6 @@ import enemy
 import weapon
 import enemy_weapon
 
-
-
 def main():
 	pygame.init() # Инициация PyGame, обязательная строчка 
 	screen = pygame.display.set_mode(system.DISPLAY) # Создаем окошко
@@ -70,7 +68,6 @@ def main():
 		all_sprites.draw(screen)
 
 		pygame.display.update()
-		
 
 if __name__ == "__main__":
 	main()
