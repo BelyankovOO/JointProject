@@ -56,7 +56,6 @@ class Game():
 		
 		self.running = True
 		while self.running and not self.game_exit:
-			pygame.display.update()
 			self.timer.tick(60)
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
@@ -71,11 +70,14 @@ class Game():
 			self.screen.blit(self.background, (0,0))
 			self.screen.blit(self.update_fps(), (10,0))
 			all_sprites.update()
-
+			
+			all_sprites.draw(self.screen)
+			pygame.display.update()
+			
 			hero_bullets_hits = pygame.sprite.spritecollide(hero, enemy_bullet_sprites, False, collided=pygame.sprite.collide_mask)
 
 			if hero_bullets_hits :
-				if hero.isReflecting():
+				if hero.is_reflecting:
 					for bullet in hero_bullets_hits :
 						if bullet.can_damage:
 							bullet.reflect_direction(hero.getCenter())
@@ -87,7 +89,7 @@ class Game():
 							self.game_state='game_over'
 							break
 
-			all_sprites.draw(self.screen)
+			
 		
 		return
 
