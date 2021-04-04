@@ -7,7 +7,7 @@ image_reflect = pygame.image.load(system.IMAGES_FOLDER+"hero/hero_reflect.png")
 image_simple = pygame.image.load(system.IMAGES_FOLDER+"hero/hero.png")
 		
 class Player(pygame.sprite.Sprite):
-	def __init__(self,x,y):
+	def __init__(self):
 		pygame.sprite.Sprite.__init__(self)
 		#self.image = pygame.Surface((system.PLAYER_WIDTH, system.PLAYER_HEIGHT))
 		#self.image.fill(pygame.Color(system.PLAYER_COLOR))
