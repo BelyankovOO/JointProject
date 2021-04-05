@@ -7,9 +7,10 @@ callbacks - словарь {имя : функция}, вызвать функц�
 '''
 def cooldown_tick(cooldowns, delta, callbacks={}):
 	for name in cooldowns:
-		cooldowns[name] -= delta
-		if cooldowns[name] < 0:
-			cooldowns[name] = 0
-			if name in callbacks:
-				callbacks[name]()
+		if cooldowns[name] > 0:
+			cooldowns[name] -= delta
+			if cooldowns[name] <= 0:
+				cooldowns[name] = 0
+				if name in callbacks:
+					callbacks[name]()
 			
