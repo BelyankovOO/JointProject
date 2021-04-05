@@ -11,11 +11,10 @@ def cooldown_tick(cooldowns, delta, callbacks={}):
 	for name in cooldowns:
 		if cooldowns[name] > 0:
 			cooldowns[name] -= delta
-			if cooldowns[name] < 0:
+			if cooldowns[name] <= 0:
 				cooldowns[name] = 0
 				if name in callbacks:
 					callbacks[name]()
-
 
 def load_images_by_dir(directory):
 	image_names =  os.listdir(directory)
@@ -35,3 +34,4 @@ def load_images_by_dir_right(directory):
 			image_list[0].append(im_left)
 			image_list[1].append(im_right)
 	return image_list
+

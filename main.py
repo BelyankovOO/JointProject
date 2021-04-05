@@ -46,7 +46,7 @@ class Game():
 		enemys_sprites = pygame.sprite.Group()
 		enemy_bullet_sprites = pygame.sprite.Group()    
 		
-		hero = player.Player()
+		hero = player.Player(self.screen)
 		all_sprites.add(hero)
 
 		for i in range(4):
@@ -76,21 +76,21 @@ class Game():
 			
 			hero_bullets_hits = pygame.sprite.spritecollide(hero, enemy_bullet_sprites, False, collided=pygame.sprite.collide_mask)
 
-			if hero_bullets_hits :
-				if hero.is_reflecting:
-					for bullet in hero_bullets_hits :
-						if bullet.can_damage:
-							bullet.reflect_direction(hero.getCenter())
-							bullet.on_hit()
-				else: 
-					for bullet in hero_bullets_hits :
-						if bullet.can_damage:
-							self.running = False
-							self.game_state='game_over'
-							break
-
-			
-		
+			if hero_bullets_hits:
+				if not hero.isInvulnerable():
+					if hero.is_reflecting:
+						for bullet in hero_bullets_hits :
+							if bullet.can_damage:
+								bullet.reflect_direction(hero.getCenter())
+								bullet.on_hit()
+					else: 
+						for bullet in hero_bullets_hits :
+							if bullet.can_damage:
+								hero.getDamage()
+								if not hero.isAlive():
+									self.running = False
+									self.game_state='game_over'
+									break			
 		return
 
 	def menu_loop(self):

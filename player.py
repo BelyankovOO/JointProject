@@ -2,7 +2,9 @@ import pygame
 import system
 import weapon
 import utility
+import lives
 
+image_invulnerable = pygame.image.load(system.IMAGES_FOLDER+"hero/hero_invulnerable.png")
 image_dir = system.IMAGES_FOLDER+"hero/"
 image_hero_cut_ratio = (0.09,0.12)
 images_idle    = utility.load_images_by_dir_right(image_dir+"Martial/"+"Idle/")
@@ -15,19 +17,22 @@ images_jump  = utility.load_images_by_dir_right(image_dir+"Martial/"+"Jump/")
 images_jump_len = len(images_jump[0])
 
 class Player(pygame.sprite.Sprite):
-	def __init__(self):
+	def __init__(self, screen):
 		pygame.sprite.Sprite.__init__(self)
 		self.image = images_idle[1][0]
 		self.mask = pygame.mask.from_surface(self.image)
 		self.rect = self.image.get_rect()
+		self.screen = screen
 		self.speed_x = 0
 		self.speed_y = 0
 		self.start_x =  self.rect.centerx
 		self.start_y =  self.rect.centery
 		self.on_ground = False
-		self.cooldowns = { 'reflect_cd': 0 , 'shoot': 0, 'reflect_time' : 0}
+		self.cooldowns = {'reflect_cd': 0 , 'shoot': 0, 'reflect_time' : 0, 'invulnerable_time': 0}
 		self.timer_last = pygame.time.get_ticks()
 		self.delta_time = 0
+		self.lives = lives.Lives()
+		self.invulnerability = False
 		self.width, self.height = self.image.get_size()
 		self.hor_offset = int(self.width*image_hero_cut_ratio[0])
 		self.ver_offset = int(self.height*image_hero_cut_ratio[1])
@@ -37,10 +42,10 @@ class Player(pygame.sprite.Sprite):
 		self.prev_state = 'idle'
 		self.is_reflecting = False
 		self.is_last_attack_frame = False
-		
 
 	def update(self):
 		self.speed_x = 0
+		self.lives.draw(self.screen)
 		keystate = pygame.key.get_pressed()
 		now = pygame.time.get_ticks()
 		self.delta_time = now - self.timer_last;
@@ -101,9 +106,6 @@ class Player(pygame.sprite.Sprite):
 
 
 	def shoot(self, all_sprites, weapon_sprites):
-		#weapon_x = weapon.Weapon(self.rect.centerx, self.rect.centery)
-		#all_sprites.add(weapon_x)
-		#weapon_sprites.add(weapon_x)
 		if (self.cooldowns['shoot']==0):
 			weapon_x = weapon.Weapon(self.rect.centerx, self.rect.centery)
 			all_sprites.add(weapon_x)
@@ -145,6 +147,26 @@ class Player(pygame.sprite.Sprite):
 				self.image = images_idle[self.direction][im_counter]
 				self.mask = pygame.mask.from_surface(self.image)
 
+	def invulnerable(self):
+		self.image = image_invulnerable
+		self.mask = pygame.mask.from_surface(self.image)
+		self.cooldowns['invulnerable_time'] = system.PLAYER_INVULNERABLE_TIME		
+
+	def isReflecting(self):
+		return self.cooldowns['reflect_time']>0
+
+	def isInvulnerable(self):
+		return self.cooldowns['invulnerable_time']>0	
+
+	def isAlive(self):
+		if self.lives.check_number_of_of_lives()>0:
+			self.invulnerable()
+			return True
+		else: 
+			return False		
 
 	def getCenter(self):
 		return (self.rect.centerx, self.rect.centery+1.2*self.ver_offset)
+
+	def getDamage(self):
+		self.lives.decrease_number_of_lives()
