@@ -24,6 +24,7 @@ def load_images_by_dir(directory):
 			image_list.append(pygame.image.load(directory+"/"+file))
 	return image_list
 
+
 def load_images_by_dir_right(directory):
 	image_names =  os.listdir(directory)
 	image_list = [[],[]]

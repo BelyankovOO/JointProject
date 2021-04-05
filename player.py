@@ -3,8 +3,9 @@ import system
 import weapon
 import utility
 import lives
+import math
 
-image_invulnerable = pygame.image.load(system.IMAGES_FOLDER+"hero/hero_invulnerable.png")
+#image_invulnerable = pygame.image.load(system.IMAGES_FOLDER+"hero/hero_invulnerable.png")
 image_dir = system.IMAGES_FOLDER+"hero/"
 image_hero_cut_ratio = (0.09,0.12)
 images_idle    = utility.load_images_by_dir_right(image_dir+"Martial/"+"Idle/")
@@ -15,6 +16,12 @@ images_attack  = utility.load_images_by_dir_right(image_dir+"Martial/"+"Attack1/
 images_attack_len = len(images_attack[0])
 images_jump  = utility.load_images_by_dir_right(image_dir+"Martial/"+"Jump/")
 images_jump_len = len(images_jump[0])
+images_jump  = utility.load_images_by_dir_right(image_dir+"Martial/"+"Jump/")
+images_jump_len = len(images_jump[0])
+images_fall  = utility.load_images_by_dir_right(image_dir+"Martial/"+"Fall/")
+images_fall_len = len(images_fall[0])
+images_die  = utility.load_images_by_dir_right(image_dir+"Martial/"+"Death/")
+images_die_len = len(images_die[0])
 
 class Player(pygame.sprite.Sprite):
 	def __init__(self, screen):
@@ -28,7 +35,7 @@ class Player(pygame.sprite.Sprite):
 		self.start_x =  self.rect.centerx
 		self.start_y =  self.rect.centery
 		self.on_ground = False
-		self.cooldowns = {'reflect_cd': 0 , 'shoot': 0, 'reflect_time' : 0, 'invulnerable_time': 0}
+		self.cooldowns = {'reflect_cd': 0 , 'shoot': 0, 'reflect_time' : 0, 'invulnerable_time': 0, 'hit_image_swap':0}
 		self.timer_last = pygame.time.get_ticks()
 		self.delta_time = 0
 		self.lives = lives.Lives()
@@ -42,48 +49,55 @@ class Player(pygame.sprite.Sprite):
 		self.prev_state = 'idle'
 		self.is_reflecting = False
 		self.is_last_attack_frame = False
+		self.drawable = True
+		self.dead = False
+		self.dying = False
 
 	def update(self):
-		self.speed_x = 0
-		self.lives.draw(self.screen)
-		keystate = pygame.key.get_pressed()
-		now = pygame.time.get_ticks()
-		self.delta_time = now - self.timer_last;
-		self.timer_last = now
-		#tick cooldowns
-		utility.cooldown_tick(self.cooldowns, self.delta_time)
-		if not self.is_reflecting:
-			if not (keystate[pygame.K_LEFT] and keystate[pygame.K_RIGHT]):
-				if keystate[pygame.K_LEFT]:
-					self.speed_x = -system.PLAYER_SPEED
-					self.curr_state = 'run'
-					self.direction = 0
-				if keystate[pygame.K_RIGHT]:
-					self.speed_x = system.PLAYER_SPEED
-					self.curr_state = 'run'
-					self.direction = 1
-				if not keystate[pygame.K_LEFT] and not keystate[pygame.K_RIGHT]:
+		if (not self.dying):
+			self.speed_x = 0
+			self.lives.draw(self.screen)
+			keystate = pygame.key.get_pressed()
+			now = pygame.time.get_ticks()
+			self.delta_time = now - self.timer_last;
+			self.timer_last = now
+			#tick cooldowns
+			utility.cooldown_tick(self.cooldowns, self.delta_time, {'hit_image_swap':self.hit_image_swap})
+			if not self.is_reflecting:
+				if not (keystate[pygame.K_LEFT] and keystate[pygame.K_RIGHT]):
+					if keystate[pygame.K_LEFT]:
+						self.speed_x = -system.PLAYER_SPEED
+						self.curr_state = 'run'
+						self.direction = 0
+					if keystate[pygame.K_RIGHT]:
+						self.speed_x = system.PLAYER_SPEED
+						self.curr_state = 'run'
+						self.direction = 1
+					if not keystate[pygame.K_LEFT] and not keystate[pygame.K_RIGHT]:
+						self.curr_state = 'idle'
+				else:	
 					self.curr_state = 'idle'
-			else:	
-				self.curr_state = 'idle'
-			if keystate[pygame.K_UP]:
-				if self.on_ground:
-					self.on_ground = False
-					self.speed_y = -system.PLAYER_JUMP
-					self.curr_state = 'jump'
-					
-			if keystate[pygame.K_SPACE] and self.cooldowns['reflect_cd']==0:
-				self.curr_state='attack'
-				self.is_reflecting = True
-				self.reflect()
-		if not self.on_ground:
-			self.speed_y += system.GRAVITY  
-		self.rect.centerx  += self.speed_x
-		self.rect.centery  += self.speed_y
-		self.crossing()
-		if self.is_last_attack_frame:
-			self.is_reflecting = False
-		self.update_image()
+				if keystate[pygame.K_UP]:
+					if self.on_ground:
+						self.on_ground = False
+						self.speed_y = -system.PLAYER_JUMP
+						self.curr_state = 'jump'
+						
+				if keystate[pygame.K_SPACE] and self.cooldowns['reflect_cd']==0:
+					self.curr_state='attack'
+					self.is_reflecting = True
+					self.reflect()
+			if not self.on_ground:
+				self.speed_y += system.GRAVITY  
+			self.rect.centerx  += self.speed_x
+			self.rect.centery  += self.speed_y
+			self.crossing()
+			if self.is_last_attack_frame:
+				self.is_reflecting = False
+			self.update_image()
+		else:
+			self.curr_state = 'dying'
+			self.update_image()
 		self.prev_state = self.curr_state
 
 	def crossing(self):
@@ -115,58 +129,77 @@ class Player(pygame.sprite.Sprite):
 	def reflect(self):
 		if (self.cooldowns['reflect_cd']==0):
 			self.cooldowns['reflect_cd']=system.PLAYER_REFLECT_CD
-			self.cooldowns['reflect_time']=system.PLAYER_REFLECTING_TIME
 	
 	def update_image(self):
 		if self.prev_state!=self.curr_state:
 			self.image_counter = 0
 		self.is_last_attack_frame = False
-		if not self.on_ground and not self.curr_state=='attack':
-			if not self.prev_state=='jump':
-				self.image = images_jump[self.direction][0]
+
+		if not self.dying:
+			if not self.on_ground and not self.curr_state=='attack':
+				self.image_counter +=1*system.PLAYER_ANIMATION_SPEED_AIR
+				im_counter = int(self.image_counter)%images_fall_len
+				if self.speed_y>=0:
+					self.image = images_fall[self.direction][im_counter]
+				else:
+					self.image = images_jump[self.direction][im_counter]
 				self.mask = pygame.mask.from_surface(self.image)
 			else:
-				self.image = images_jump[self.direction][1]
-				self.mask = pygame.mask.from_surface(self.image)
+				if self.curr_state=='run':
+					self.image_counter +=1*system.PLAYER_ANIMATION_SPEED_RUN
+					im_counter = int(self.image_counter)%images_run_len
+					self.image = images_run[self.direction][im_counter]
+					self.mask = pygame.mask.from_surface(self.image)
+				if self.curr_state=='attack':
+					self.image_counter +=1*system.PLAYER_ANIMATION_SPEED_ATTACK
+					im_counter = int(self.image_counter)%images_attack_len
+					self.image = images_attack[self.direction][im_counter]
+					self.mask = pygame.mask.from_surface(self.image)
+					if im_counter==images_attack_len-1:
+						self.is_last_attack_frame= True
+				if self.curr_state=='idle':
+					self.image_counter +=1*system.PLAYER_ANIMATION_SPEED_IDLE
+					im_counter = int(self.image_counter)%images_idle_len
+					self.image = images_idle[self.direction][im_counter]
+					self.mask = pygame.mask.from_surface(self.image)
 		else:
-			if self.curr_state=='run':
-				self.image_counter +=1*system.PLAYER_ANIMATION_SPEED_RUN
-				im_counter = int(self.image_counter)%images_run_len
-				self.image = images_run[self.direction][im_counter]
-				self.mask = pygame.mask.from_surface(self.image)
-			if self.curr_state=='attack':
-				self.image_counter +=1*system.PLAYER_ANIMATION_SPEED_ATTACK
-				im_counter = int(self.image_counter)%images_attack_len
-				self.image = images_attack[self.direction][im_counter]
-				self.mask = pygame.mask.from_surface(self.image)
-				if im_counter==images_attack_len-1:
-					self.is_last_attack_frame= True
-			if self.curr_state=='idle':
-				self.image_counter +=1*system.PLAYER_ANIMATION_SPEED_IDLE
-				im_counter = int(self.image_counter)%images_idle_len
-				self.image = images_idle[self.direction][im_counter]
-				self.mask = pygame.mask.from_surface(self.image)
+			self.image_counter +=1*system.PLAYER_ANIMATION_SPEED_DIE
+			im_counter = math.floor(self.image_counter)
+			if im_counter>=images_die_len:
+				im_counter = images_die_len-1
+			self.image = images_die[self.direction][im_counter]
+			self.mask = pygame.mask.from_surface(self.image)
+			if self.image_counter>images_die_len+15:
+				self.dead = True
 
 	def invulnerable(self):
-		self.image = image_invulnerable
+		#self.image = image_invulnerable
 		self.mask = pygame.mask.from_surface(self.image)
 		self.cooldowns['invulnerable_time'] = system.PLAYER_INVULNERABLE_TIME		
-
-	def isReflecting(self):
-		return self.cooldowns['reflect_time']>0
+		self.cooldowns['hit_image_swap'] = system.PLAYER_ANIMATION_FLICKER_ROTATION
+		self.drawable=False
+		
 
 	def isInvulnerable(self):
 		return self.cooldowns['invulnerable_time']>0	
 
 	def isAlive(self):
-		if self.lives.check_number_of_of_lives()>0:
-			self.invulnerable()
-			return True
-		else: 
-			return False		
-
+		return not self.dead	
+			
+	def hit_image_swap(self):
+		if self.cooldowns['invulnerable_time']>0:
+			self.drawable = not self.drawable
+			self.cooldowns['hit_image_swap'] = system.PLAYER_ANIMATION_FLICKER_ROTATION
+		else:
+			self.drawable=True
+	
 	def getCenter(self):
 		return (self.rect.centerx, self.rect.centery+1.2*self.ver_offset)
 
 	def getDamage(self):
 		self.lives.decrease_number_of_lives()
+		if not self.dying:
+			if self.lives.check_number_of_of_lives()>0:
+				self.invulnerable()
+			else: 
+				self.dying = True

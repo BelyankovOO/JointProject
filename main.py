@@ -45,16 +45,17 @@ class Game():
 		#weapons_sprites = pygame.sprite.Group()
 		enemys_sprites = pygame.sprite.Group()
 		enemy_bullet_sprites = pygame.sprite.Group()    
-		
+		self.background.fill(pygame.Color(system.BACKGROUND_COLOR))
 		hero = player.Player(self.screen)
-		all_sprites.add(hero)
-
+		#all_sprites.add(hero)
+		r,g,b,_	= pygame.Color(system.BACKGROUND_COLOR)
 		for i in range(4):
 			mob = enemy.Enemy(all_sprites, enemys_sprites, enemy_bullet_sprites)
 			all_sprites.add(mob)
 			enemys_sprites.add(mob)
 		
 		self.running = True
+		
 		while self.running and not self.game_exit:
 			self.timer.tick(60)
 			for event in pygame.event.get():
@@ -66,31 +67,43 @@ class Game():
 						hero.shoot(all_sprites, weapons_sprites)
 					elif event.key == pygame.K_ESCAPE:
 						self.pause_menu_loop()
-
+			
+			if hero.dying:
+				r+=10*system.COLOR_FILL_SPEED
+				if (r>255):
+					r = 255
+				g = g*system.COLOR_FILL_SPEED
+				b = b*system.COLOR_FILL_SPEED
+				self.background.fill((r,g,b))
 			self.screen.blit(self.background, (0,0))
 			self.screen.blit(self.update_fps(), (10,0))
+			
+			hero.update()
 			all_sprites.update()
 			
 			all_sprites.draw(self.screen)
+			if hero.drawable:
+				self.screen.blit(hero.image, hero.rect)
 			pygame.display.update()
 			
 			hero_bullets_hits = pygame.sprite.spritecollide(hero, enemy_bullet_sprites, False, collided=pygame.sprite.collide_mask)
 
 			if hero_bullets_hits:
-				if not hero.isInvulnerable():
-					if hero.is_reflecting:
-						for bullet in hero_bullets_hits :
-							if bullet.can_damage:
-								bullet.reflect_direction(hero.getCenter())
-								bullet.on_hit()
-					else: 
-						for bullet in hero_bullets_hits :
-							if bullet.can_damage:
-								hero.getDamage()
-								if not hero.isAlive():
-									self.running = False
-									self.game_state='game_over'
-									break			
+				if hero.is_reflecting:
+					for bullet in hero_bullets_hits :
+						if bullet.can_damage:
+							bullet.reflect_direction(hero.getCenter())
+							bullet.on_hit()
+				elif not hero.isInvulnerable():
+					for bullet in hero_bullets_hits :
+						if bullet.can_damage:
+							hero.getDamage()
+							bullet.kill()
+			if not hero.isAlive():
+				self.running = False
+				self.game_state='game_over'
+				break	
+			
 		return
 
 	def menu_loop(self):
