@@ -10,6 +10,7 @@ import enemy
 import weapon
 import enemy_weapon
 
+sound_dir = system.SOUNDS_FOLDER+"background/"
 
 class Game():
 	def __init__(self):
@@ -23,6 +24,8 @@ class Game():
 		self.game_states = ['menu','game','game_over']
 		self.game_state = 'menu'
 		self.game_exit = False
+		self.background_music = pygame.mixer.music.load(sound_dir+"background.mp3")
+		pygame.mixer.music.set_volume(0.05)
 		return
 		
 	def run(self):
@@ -53,6 +56,8 @@ class Game():
 			mob = enemy.Enemy(all_sprites, enemys_sprites, enemy_bullet_sprites)
 			all_sprites.add(mob)
 			enemys_sprites.add(mob)
+
+		pygame.mixer.music.play(loops=-1)	
 		
 		self.running = True
 		
@@ -99,6 +104,7 @@ class Game():
 						if bullet.can_damage:
 							hero.getDamage()
 							bullet.kill()
+
 			if not hero.isAlive():
 				self.running = False
 				self.game_state='game_over'

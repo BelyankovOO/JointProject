@@ -5,7 +5,6 @@ import utility
 import lives
 import math
 
-#image_invulnerable = pygame.image.load(system.IMAGES_FOLDER+"hero/hero_invulnerable.png")
 image_dir = system.IMAGES_FOLDER+"hero/"
 image_hero_cut_ratio = (0.09,0.12)
 images_idle    = utility.load_images_by_dir_right(image_dir+"Martial/"+"Idle/")
@@ -23,6 +22,8 @@ images_fall_len = len(images_fall[0])
 images_die  = utility.load_images_by_dir_right(image_dir+"Martial/"+"Death/")
 images_die_len = len(images_die[0])
 
+sound_dir = system.SOUNDS_FOLDER+"hero/"
+
 class Player(pygame.sprite.Sprite):
 	def __init__(self, screen):
 		pygame.sprite.Sprite.__init__(self)
@@ -35,7 +36,7 @@ class Player(pygame.sprite.Sprite):
 		self.start_x =  self.rect.centerx
 		self.start_y =  self.rect.centery
 		self.on_ground = False
-		self.cooldowns = {'reflect_cd': 0 , 'shoot': 0, 'reflect_time' : 0, 'invulnerable_time': 0, 'hit_image_swap':0}
+		self.cooldowns = {'reflect_cd': 0 , 'shoot': 0, 'reflect_time' : 0, 'invulnerable_time': 0, 'hit_image_swap':0, 'sound_run_cd': 0}
 		self.timer_last = pygame.time.get_ticks()
 		self.delta_time = 0
 		self.lives = lives.Lives()
@@ -52,6 +53,10 @@ class Player(pygame.sprite.Sprite):
 		self.drawable = True
 		self.dead = False
 		self.dying = False
+		self.sound_sword_hit = pygame.mixer.Sound(sound_dir+"sword_hit.flac")
+		self.sound_jump = pygame.mixer.Sound(sound_dir+"jump.ogg")
+		self.sound_hurt = pygame.mixer.Sound(sound_dir+"hurt.wav")
+		self.sound_step = pygame.mixer.Sound(sound_dir+"step.ogg")
 
 	def update(self):
 		if (not self.dying):
@@ -82,10 +87,12 @@ class Player(pygame.sprite.Sprite):
 						self.on_ground = False
 						self.speed_y = -system.PLAYER_JUMP
 						self.curr_state = 'jump'
+						self.sound_jump.play()
 						
 				if keystate[pygame.K_SPACE] and self.cooldowns['reflect_cd']==0:
 					self.curr_state='attack'
 					self.is_reflecting = True
+					self.sound_sword_hit.play()
 					self.reflect()
 			if not self.on_ground:
 				self.speed_y += system.GRAVITY  
@@ -150,6 +157,9 @@ class Player(pygame.sprite.Sprite):
 					im_counter = int(self.image_counter)%images_run_len
 					self.image = images_run[self.direction][im_counter]
 					self.mask = pygame.mask.from_surface(self.image)
+					if self.cooldowns['sound_run_cd'] == 0:
+						self.sound_step.play()
+						self.cooldowns['sound_run_cd'] = system.SOUND_RUN_CD
 				if self.curr_state=='attack':
 					self.image_counter +=1*system.PLAYER_ANIMATION_SPEED_ATTACK
 					im_counter = int(self.image_counter)%images_attack_len
@@ -177,6 +187,7 @@ class Player(pygame.sprite.Sprite):
 		self.mask = pygame.mask.from_surface(self.image)
 		self.cooldowns['invulnerable_time'] = system.PLAYER_INVULNERABLE_TIME		
 		self.cooldowns['hit_image_swap'] = system.PLAYER_ANIMATION_FLICKER_ROTATION
+		self.sound_hurt.play()
 		self.drawable=False
 		
 
