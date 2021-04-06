@@ -25,7 +25,7 @@ class Game():
 		self.game_state = 'menu'
 		self.game_exit = False
 		self.background_music = pygame.mixer.music.load(sound_dir+"background.mp3")
-		pygame.mixer.music.set_volume(0.05)
+		pygame.mixer.music.set_volume(0.02)
 		return
 		
 	def run(self):
