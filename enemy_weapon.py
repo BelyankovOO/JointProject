@@ -4,12 +4,20 @@ import random
 import math
 import utility
 
-images = {'shuriken':[]}
+images = {'shuriken':[], 'yellow_shuriken': []}
 images['shuriken'].append(pygame.image.load(system.IMAGES_FOLDER+"bullets/shuriken/shuriken0.png"))
 images['shuriken'].append(pygame.image.load(system.IMAGES_FOLDER+"bullets/shuriken/shuriken1.png"))
 images['shuriken'].append(pygame.image.load(system.IMAGES_FOLDER+"bullets/shuriken/shuriken2.png"))
 images['shuriken'].append(pygame.image.load(system.IMAGES_FOLDER+"bullets/shuriken/shuriken3.png"))
 images['shuriken'].append(pygame.image.load(system.IMAGES_FOLDER+"bullets/shuriken/shuriken4.png"))
+
+images['yellow_shuriken'].append(pygame.image.load(system.IMAGES_FOLDER+"bullets/yellow_shuriken/yellow_shuriken0.png"))
+images['yellow_shuriken'].append(pygame.image.load(system.IMAGES_FOLDER+"bullets/yellow_shuriken/yellow_shuriken1.png"))
+images['yellow_shuriken'].append(pygame.image.load(system.IMAGES_FOLDER+"bullets/yellow_shuriken/yellow_shuriken2.png"))
+images['yellow_shuriken'].append(pygame.image.load(system.IMAGES_FOLDER+"bullets/yellow_shuriken/yellow_shuriken3.png"))
+images['yellow_shuriken'].append(pygame.image.load(system.IMAGES_FOLDER+"bullets/yellow_shuriken/yellow_shuriken4.png"))
+
+
 
 class EnemyWeapon(pygame.sprite.Sprite):
 	def __init__(self, x, y):
@@ -82,10 +90,18 @@ class EnemyWeapon(pygame.sprite.Sprite):
 	def on_hit(self):
 		self.can_damage = False
 		self.cooldowns['can_damage'] = system.SHURIKEN_COOLDOWN_AFTER_REFLECT
+		self.change_sprite()
 		
 	def image_rotation(self):
-		self.image_num = (self.image_num+1)%5
-		self.image = images['shuriken'][self.image_num]
-		self.mask = pygame.mask.from_surface(self.image)
-		self.cooldowns['rotation'] = (system.SHURIKEN_ROTATION/self.velocity)
+		if self.can_damage: 
+			self.image_num = (self.image_num+1)%5
+			self.image = images['shuriken'][self.image_num]
+			self.mask = pygame.mask.from_surface(self.image)
+			self.cooldowns['rotation'] = (system.SHURIKEN_ROTATION/self.velocity)
+		else: 
+			self.image_num = (self.image_num+1)%5
+			self.image = images['yellow_shuriken'][self.image_num]
+			self.mask = pygame.mask.from_surface(self.image)
+			self.cooldowns['rotation'] = (system.SHURIKEN_ROTATION/self.velocity)	
+
 	  
