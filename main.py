@@ -92,6 +92,15 @@ class Game():
 			pygame.display.update()
 			
 			hero_bullets_hits = pygame.sprite.spritecollide(hero, enemy_bullet_sprites, False, collided=pygame.sprite.collide_mask)
+			enemy_hits = pygame.sprite.groupcollide(enemys_sprites, enemy_bullet_sprites, False, False, collided=pygame.sprite.collide_mask)
+
+			if enemy_hits:
+				for nindja in enemy_hits.keys():
+					for bullet in enemy_hits[nindja]:
+						if not bullet.can_damage:
+							bullet.kill()
+							nindja.kill()
+
 
 			if hero_bullets_hits:
 				if hero.is_reflecting:
