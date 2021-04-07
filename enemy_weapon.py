@@ -20,20 +20,19 @@ images['yellow_shuriken'].append(pygame.image.load(system.IMAGES_FOLDER+"bullets
 
 
 class EnemyWeapon(pygame.sprite.Sprite):
-	def __init__(self, x, y):
+	def __init__(self, position, y, enemy_border):
 		pygame.sprite.Sprite.__init__(self)
 		self.image = images['shuriken'][0]
 		self.mask = pygame.mask.from_surface(self.image)
 		self.rect = self.image.get_rect()
-		if x == 0:
+		if position == 1:
 			self.speed_x = random.randrange(1, system.MAX_ENEMY_WEAPON_SPEED)
 			self.speed_y = random.randrange(- system.MAX_ENEMY_WEAPON_SPEED,  system.MAX_ENEMY_WEAPON_SPEED)
-			self.rect.right = x+system.ENEMY_WIDTH
-		elif x == system.WIN_WIDTH-system.ENEMY_WIDTH:
+			self.rect.right = enemy_border
+		elif position == 0:
 			self.speed_x = random.randrange(- system.MAX_ENEMY_WEAPON_SPEED, -1)
 			self.speed_y = random.randrange(- system.MAX_ENEMY_WEAPON_SPEED,  system.MAX_ENEMY_WEAPON_SPEED)
-			self.rect.left = x   
-		self.start_x = x
+			self.rect.left = system.WIN_WIDTH - enemy_border   
 		self.start_y = y
 		self.rect.centery = y
 		self.timer_last = pygame.time.get_ticks()
@@ -90,7 +89,6 @@ class EnemyWeapon(pygame.sprite.Sprite):
 	def on_hit(self):
 		self.can_damage = False
 		self.cooldowns['can_damage'] = system.SHURIKEN_COOLDOWN_AFTER_REFLECT
-		self.change_sprite()
 		
 	def image_rotation(self):
 		if self.can_damage: 
