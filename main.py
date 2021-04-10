@@ -60,7 +60,7 @@ class Game():
 			enemys_sprites.add(mob)
 
 		#Bonus
-		bonus_creater = bonus.BonusCreater(hero)
+		bonus_creater = bonus.BonusCreater(hero, bonus_sprites)
 
 		pygame.mixer.music.play(loops=-1)	
 		
@@ -88,12 +88,15 @@ class Game():
 			self.screen.blit(self.background, (0,0))
 			self.screen.blit(self.update_fps(), (10,0))
 
-			bonus_creater.create_bonus(all_sprites, bonus_sprites)
+			bonus_creater.create_bonus()
 
 			hero.update()
+			bonus_sprites.update()
 			all_sprites.update()
-			
+
+			bonus_creater.draw(self.screen)
 			all_sprites.draw(self.screen)
+
 			if hero.drawable:
 				self.screen.blit(hero.image, hero.rect)
 			pygame.display.update()
@@ -123,6 +126,7 @@ class Game():
 			if hero_bonus_hits:
 				for one_bonus in hero_bonus_hits:
 					one_bonus.take_bonus()
+
 
 
 			if not hero.isAlive():

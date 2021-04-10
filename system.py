@@ -46,4 +46,8 @@ LIVE_POSITION_HEIGHT = 5
 SOUND_RUN_CD = 300
 
 #BONUS
-SPAWN_BONUS_CD = 3 # seconds
+BONUS_SPAWN_CD = 3 # seconds ПОЯВЛЕНИЕ НОВОГО БОНУСА
+BONUS_HIDE_TIME = 1.5 # seconds ИСЧЕЗНОВЕНИЕ БОНУСА
+BONUS_BLINKING_BARRIER = .85 # % - процент прошедшего времени, когда начинает мигать
+BONUS_BLINKING_FREQUENCY = 5 # Частота мерцания
+
