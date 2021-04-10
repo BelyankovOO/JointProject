@@ -20,19 +20,29 @@ images['yellow_shuriken'].append(pygame.image.load(system.IMAGES_FOLDER+"bullets
 
 
 class EnemyWeapon(pygame.sprite.Sprite):
-	def __init__(self, position, y, enemy_border):
+	def __init__(self, position, y, enemy_border, player_information):
 		pygame.sprite.Sprite.__init__(self)
 		self.image = images['shuriken'][0]
 		self.mask = pygame.mask.from_surface(self.image)
 		self.rect = self.image.get_rect()
 		if position == 1:
-			self.speed_x = random.randrange(1, system.MAX_ENEMY_WEAPON_SPEED)
-			self.speed_y = random.randrange(- system.MAX_ENEMY_WEAPON_SPEED,  system.MAX_ENEMY_WEAPON_SPEED)
+			norma_vector = utility.vector_normalization((player_information[0] - enemy_border, player_information[1] - y))
+			if player_information[2] == 1:
+				self.speed_x = math.ceil(norma_vector[0] * system.MAX_ENEMY_WEAPON_SPEED) 
+				self.speed_y = math.ceil(norma_vector[1] * system.MAX_ENEMY_WEAPON_SPEED)
+			elif player_information[2] == 0:
+				self.speed_x = math.floor(norma_vector[0] * system.MAX_ENEMY_WEAPON_SPEED) 
+				self.speed_y = math.floor(norma_vector[1] * system.MAX_ENEMY_WEAPON_SPEED)	
 			self.rect.right = enemy_border
 		elif position == 0:
-			self.speed_x = random.randrange(- system.MAX_ENEMY_WEAPON_SPEED, -1)
-			self.speed_y = random.randrange(- system.MAX_ENEMY_WEAPON_SPEED,  system.MAX_ENEMY_WEAPON_SPEED)
-			self.rect.left = system.WIN_WIDTH - enemy_border   
+			norma_vector = utility.vector_normalization((player_information[0] - (system.WIN_WIDTH - enemy_border), player_information[1] - y))
+			if player_information[2] == 1:
+				self.speed_x = math.ceil(norma_vector[0] * system.MAX_ENEMY_WEAPON_SPEED) 
+				self.speed_y = math.ceil(norma_vector[1] * system.MAX_ENEMY_WEAPON_SPEED)
+			elif player_information[2] == 0:
+				self.speed_x = math.floor(norma_vector[0] * system.MAX_ENEMY_WEAPON_SPEED) 
+				self.speed_y = math.floor(norma_vector[1] * system.MAX_ENEMY_WEAPON_SPEED)
+			self.rect.left = system.WIN_WIDTH - enemy_border 
 		self.start_y = y
 		self.rect.centery = y
 		self.timer_last = pygame.time.get_ticks()
@@ -41,7 +51,6 @@ class EnemyWeapon(pygame.sprite.Sprite):
 		self.velocity = math.sqrt(self.speed_x**2+self.speed_y**2)
 		self.can_damage = True
 		self.cooldowns = {'can_damage':0, 'rotation': (system.SHURIKEN_ROTATION/self.velocity)}
-		
 
 	def update(self):
 		now = pygame.time.get_ticks()
@@ -52,8 +61,10 @@ class EnemyWeapon(pygame.sprite.Sprite):
 											'rotation': self.image_rotation
 											})
 		self.crossing()
+		#print("was"+str(self.rect.y)+str(self.rect.x)+"added"+str(self.speed_x)+str(self.speed_y))
 		self.rect.y += self.speed_y
 		self.rect.x += self.speed_x
+		#print("were"+str(self.rect.y)+str(self.rect.x))
 
 	def crossing(self):    
 		if self.rect.top < 0:

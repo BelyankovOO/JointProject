@@ -9,8 +9,13 @@ import player
 import enemy
 import weapon
 import enemy_weapon
+import cooldown_animation
+import utility
 
 sound_dir = system.SOUNDS_FOLDER+"background/"
+image_dir = system.IMAGES_FOLDER+"cooldown_animation/"
+
+image_cooldown = utility.load_images_by_dir(image_dir)
 
 class Game():
 	def __init__(self):
@@ -45,15 +50,16 @@ class Game():
 		
 	def game_loop(self):
 		all_sprites = pygame.sprite.Group()
-		#weapons_sprites = pygame.sprite.Group()
 		enemys_sprites = pygame.sprite.Group()
 		enemy_bullet_sprites = pygame.sprite.Group()    
 		self.background.fill(pygame.Color(system.BACKGROUND_COLOR))
 		hero = player.Player(self.screen)
+		cooldown_1 = cooldown_animation.CooldownAnimation(image_cooldown[0], 3, (system.WIN_WIDTH - 100, 40))
+		all_sprites.add(cooldown_1)
 		#all_sprites.add(hero)
 		r,g,b,_	= pygame.Color(system.BACKGROUND_COLOR)
 		for i in range(4):
-			mob = enemy.Enemy(all_sprites, enemys_sprites, enemy_bullet_sprites)
+			mob = enemy.Enemy(all_sprites, enemys_sprites, enemy_bullet_sprites, hero)
 			all_sprites.add(mob)
 			enemys_sprites.add(mob)
 
