@@ -9,6 +9,7 @@ import player
 import enemy
 import weapon
 import enemy_weapon
+import bonus
 
 sound_dir = system.SOUNDS_FOLDER+"background/"
 
@@ -45,9 +46,10 @@ class Game():
 		
 	def game_loop(self):
 		all_sprites = pygame.sprite.Group()
-		#weapons_sprites = pygame.sprite.Group()
+		weapons_sprites = pygame.sprite.Group()
 		enemys_sprites = pygame.sprite.Group()
-		enemy_bullet_sprites = pygame.sprite.Group()    
+		enemy_bullet_sprites = pygame.sprite.Group()
+		bonus_sprites = pygame.sprite.Group()
 		self.background.fill(pygame.Color(system.BACKGROUND_COLOR))
 		hero = player.Player(self.screen)
 		#all_sprites.add(hero)
@@ -56,6 +58,9 @@ class Game():
 			mob = enemy.Enemy(all_sprites, enemys_sprites, enemy_bullet_sprites)
 			all_sprites.add(mob)
 			enemys_sprites.add(mob)
+
+		#Bonus
+		bonus_creater = bonus.BonusCreater(hero)
 
 		pygame.mixer.music.play(loops=-1)	
 		
@@ -82,7 +87,9 @@ class Game():
 				self.background.fill((r,g,b))
 			self.screen.blit(self.background, (0,0))
 			self.screen.blit(self.update_fps(), (10,0))
-			
+
+			bonus_creater.create_bonus(all_sprites, bonus_sprites)
+
 			hero.update()
 			all_sprites.update()
 			
@@ -93,14 +100,13 @@ class Game():
 			
 			hero_bullets_hits = pygame.sprite.spritecollide(hero, enemy_bullet_sprites, False, collided=pygame.sprite.collide_mask)
 			enemy_hits = pygame.sprite.groupcollide(enemys_sprites, enemy_bullet_sprites, False, False, collided=pygame.sprite.collide_mask)
-
+			hero_bonus_hits = pygame.sprite.spritecollide(hero, bonus_sprites, False, collided=pygame.sprite.collide_mask)
 			if enemy_hits:
 				for nindja in enemy_hits.keys():
 					for bullet in enemy_hits[nindja]:
 						if not bullet.can_damage:
 							bullet.kill()
 							nindja.kill()
-
 
 			if hero_bullets_hits:
 				if hero.is_reflecting:
@@ -113,6 +119,11 @@ class Game():
 						if bullet.can_damage:
 							hero.getDamage()
 							bullet.kill()
+
+			if hero_bonus_hits:
+				for one_bonus in hero_bonus_hits:
+					one_bonus.take_bonus()
+
 
 			if not hero.isAlive():
 				self.running = False

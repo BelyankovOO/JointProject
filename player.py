@@ -4,6 +4,7 @@ import weapon
 import utility
 import lives
 import math
+import os
 
 image_dir = system.IMAGES_FOLDER+"hero/"
 image_hero_cut_ratio = (0.09,0.12)
@@ -53,7 +54,9 @@ class Player(pygame.sprite.Sprite):
 		self.drawable = True
 		self.dead = False
 		self.dying = False
-		self.sound_sword_hit = pygame.mixer.Sound(sound_dir+"sword_hit.flac")
+		print(os.getcwd(),sound_dir)
+
+		self.sound_sword_hit = pygame.mixer.Sound(os.path.join(sound_dir,"sword_hit.flac"))
 		self.sound_jump = pygame.mixer.Sound(sound_dir+"jump.ogg")
 		self.sound_hurt = pygame.mixer.Sound(sound_dir+"hurt.wav")
 		self.sound_step = pygame.mixer.Sound(sound_dir+"step.ogg")
@@ -214,3 +217,7 @@ class Player(pygame.sprite.Sprite):
 				self.invulnerable()
 			else: 
 				self.dying = True
+
+	def getLifeBonus(self):
+		self.lives.increase_number_of_lives()
+
