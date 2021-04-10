@@ -185,12 +185,13 @@ class Player(pygame.sprite.Sprite):
 			if self.image_counter>images_die_len+15:
 				self.dead = True
 
-	def invulnerable(self):
+	def invulnerable(self, sound=True):
 		#self.image = image_invulnerable
 		self.mask = pygame.mask.from_surface(self.image)
 		self.cooldowns['invulnerable_time'] = system.PLAYER_INVULNERABLE_TIME		
 		self.cooldowns['hit_image_swap'] = system.PLAYER_ANIMATION_FLICKER_ROTATION
-		self.sound_hurt.play()
+		if sound:
+			self.sound_hurt.play()
 		self.drawable=False
 		
 
@@ -220,4 +221,7 @@ class Player(pygame.sprite.Sprite):
 
 	def getLifeBonus(self):
 		self.lives.increase_number_of_lives()
+
+	def getInvulnerableBonus(self):
+		self.invulnerable()
 

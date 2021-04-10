@@ -9,7 +9,7 @@ import player
 import enemy
 import weapon
 import enemy_weapon
-import bonus
+import bonuscreater
 
 sound_dir = system.SOUNDS_FOLDER+"background/"
 
@@ -60,7 +60,7 @@ class Game():
 			enemys_sprites.add(mob)
 
 		#Bonus
-		bonus_creater = bonus.BonusCreater(hero, bonus_sprites)
+		bonus_creater = bonuscreater.BonusCreater(hero, bonus_sprites)
 
 		pygame.mixer.music.play(loops=-1)	
 		

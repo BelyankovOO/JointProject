@@ -48,6 +48,6 @@ SOUND_RUN_CD = 300
 #BONUS
 BONUS_SPAWN_CD = 3 # seconds ПОЯВЛЕНИЕ НОВОГО БОНУСА
 BONUS_HIDE_TIME = 1.5 # seconds ИСЧЕЗНОВЕНИЕ БОНУСА
-BONUS_BLINKING_BARRIER = .85 # % - процент прошедшего времени, когда начинает мигать
+BONUS_BLINKING_BARRIER = .80 # % - процент прошедшего времени, когда начинает мигать
 BONUS_BLINKING_FREQUENCY = 5 # Частота мерцания
 
