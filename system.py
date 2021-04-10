@@ -50,4 +50,5 @@ BONUS_SPAWN_CD = 3 # seconds ПОЯВЛЕНИЕ НОВОГО БОНУСА
 BONUS_HIDE_TIME = 1.5 # seconds ИСЧЕЗНОВЕНИЕ БОНУСА
 BONUS_BLINKING_BARRIER = .80 # % - процент прошедшего времени, когда начинает мигать
 BONUS_BLINKING_FREQUENCY = 5 # Частота мерцания
+BONUS_INVULNERABLE_TIME = 4000 # Продолжительность режима неуязвимости
 

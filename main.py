@@ -112,7 +112,7 @@ class Game():
 							nindja.kill()
 
 			if hero_bullets_hits:
-				if hero.is_reflecting:
+				if hero.is_reflecting or hero.have_InvulnerableBonus:
 					for bullet in hero_bullets_hits :
 						if bullet.can_damage:
 							bullet.reflect_direction(hero.getCenter())
