@@ -17,8 +17,8 @@ BACKGROUND_COLOR = "#004400"
 COLOR_FILL_SPEED = 0.3
 GRAVITY = 0.5
 
-ENEMY_COUNT = 4
-ENEMY_NUMBER_OF_BULLETS = 4
+ENEMY_COUNT = 0
+ENEMY_NUMBER_OF_BULLETS = 40
 ENEMY_WIDTH = 20
 ENEMY_HEIGHT = 32
 ENEMY_COLOR = "#ff0000"
@@ -53,4 +53,7 @@ BONUS_HIDE_TIME = 1.5 # seconds ИСЧЕЗНОВЕНИЕ БОНУСА
 BONUS_BLINKING_BARRIER = .80 # % - процент прошедшего времени, когда начинает мигать
 BONUS_BLINKING_FREQUENCY = 5 # Частота мерцания
 BONUS_INVULNERABLE_TIME = 4000 # Продолжительность режима неуязвимости
+
+#LEADERBOARD
+LEADERBOARD_MAX_ROW = 7 # Макс число строк в таблице лидерборда
 

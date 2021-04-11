@@ -7,6 +7,7 @@ import pygame_menu
 import system
 import player
 import enemy
+from leaderboard import Leaderboard
 import weapon
 import enemy_weapon
 import bonuscreater
@@ -25,6 +26,7 @@ class Game():
 		self.game_states = ['menu','game','game_over']
 		self.game_state = 'menu'
 		self.game_exit = False
+		self.leaderboard = Leaderboard()
 		self.background_music = pygame.mixer.music.load(sound_dir+"background.mp3")
 		pygame.mixer.music.set_volume(0.02)
 		return
@@ -37,6 +39,8 @@ class Game():
 				self.game_loop()
 			elif self.game_state=='game_over':
 				self.game_over_loop()
+			elif self.game_state == 'round_win':
+				self.win_loop()
 		return
 		
 	def update_fps(self):
@@ -65,7 +69,7 @@ class Game():
 		pygame.mixer.music.play(loops=-1)	
 		
 		self.running = True
-		
+		self.start_time = pygame.time.get_ticks()
 		while self.running and not self.game_exit:
 			self.timer.tick(60)
 			for event in pygame.event.get():
@@ -132,7 +136,14 @@ class Game():
 			if not hero.isAlive():
 				self.running = False
 				self.game_state='game_over'
-				break	
+				break
+
+			if len(enemys_sprites) == 0:
+				self.running = False
+				self.end_time = pygame.time.get_ticks()
+				self.game_time = (self.end_time - self.start_time) / 1000
+				self.game_state = 'round_win'
+				break
 			
 		return
 
@@ -148,6 +159,35 @@ class Game():
 		w, h = pygame.display.get_surface().get_size()
 		self.menu = pygame_menu.Menu(h, w, 'Game OVER', theme=pygame_menu.themes.THEME_SOLARIZED)
 		self.menu.add.button('Restart', self.start_the_game)
+		self.menu.add.button('Go to main menu', self.exit_to_main_menu)
+		self.menu.add.button('Quit', self.set_game_exit)
+		self.menu.mainloop(self.screen)
+		return
+
+	def save_best_score(self, current_text):
+		self.leaderboard.save_score(current_text, self.game_time)
+
+	def win_loop(self):
+		w, h = pygame.display.get_surface().get_size()
+		self.menu = pygame_menu.Menu(h, w,
+									 f'YOU WIN! YOUR TIME: {int(self.game_time // 60)}.{round(self.game_time % 60)} '
+									 f'minutes', theme=pygame_menu.themes.THEME_SOLARIZED)
+		self.menu.add_text_input('Name :', maxchar=10, onreturn=self.save_best_score, input_underline_len=20)
+		# print(self.menu.get_value())
+		self.menu.add.button('Restart', self.start_the_game)
+		self.menu.add.button('Leaderboard', self.leaderboard_loop)
+		self.menu.add.button('Go to main menu', self.exit_to_main_menu)
+		self.menu.add.button('Quit', self.set_game_exit)
+		self.menu.mainloop(self.screen)
+
+		return
+
+	def leaderboard_loop(self):
+		w, h = pygame.display.get_surface().get_size()
+		self.menu.disable()
+		self.menu = pygame_menu.Menu(h, w, f'LEADERBOARD', theme=pygame_menu.themes.THEME_SOLARIZED)
+		table = self.menu.add.table(table_id='LEADERBOARD', font_size=20, font_name='century gothic')
+		self.leaderboard.add_leader_table(table)
 		self.menu.add.button('Go to main menu', self.exit_to_main_menu)
 		self.menu.add.button('Quit', self.set_game_exit)
 		self.menu.mainloop(self.screen)
