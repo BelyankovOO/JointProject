@@ -78,10 +78,18 @@ class EnemyWeapon(pygame.sprite.Sprite):
 		norm = [self.rect.x-colide_point_center[0], self.rect.y-colide_point_center[1]]
 		s_norm = math.sqrt(norm[0]**2+norm[1]**2)
 		s_L = math.sqrt(L[0]**2+L[1]**2)
+		L[0] = L[0]/s_L
+		L[1] = L[1]/s_L
 		norm[0] = norm[0]/s_norm
 		norm[1] = norm[1]/s_norm
-		self.speed_x = s_L*(norm[0])
-		self.speed_y = s_L*(norm[1]) 
+		#self.speed_x = s_L*(norm[0])
+		#self.speed_y = s_L*(norm[1])
+		scalarNL = L[0]*norm[0] + L[1]*norm[1]
+		#self.speed_x = s_L*(L[0]-2*scalarNL*norm[0])
+		#self.speed_y = s_L*(L[1]-2*scalarNL*norm[1])
+		self.speed_x = s_L*norm[0]
+		self.speed_y = s_L*norm[1]
+		#print("ref ", norm, colide_point_center)
 
 	def reset_can_damage(self):
 		self.can_damage = True

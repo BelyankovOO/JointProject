@@ -211,7 +211,7 @@ class Player(pygame.sprite.Sprite):
 			self.drawable=True
 	
 	def getCenter(self):
-		return (self.rect.centerx, self.rect.centery+1.2*self.ver_offset)
+		return (self.rect.centerx, self.rect.centery)
 
 	def getDamage(self):
 		self.lives.decrease_number_of_lives()
