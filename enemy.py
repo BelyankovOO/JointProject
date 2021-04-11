@@ -35,7 +35,7 @@ class Enemy(pygame.sprite.Sprite):
 		self.stopped = False
 		self.kill_flag = self.two_enemy_in_one_stop_position(enemy_sprites, self.stop_position)
 		self.last_update = pygame.time.get_ticks()
-		self.number_of_bullets = 1
+		self.number_of_bullets = system.ENEMY_NUMBER_OF_BULLETS
 		self.image_counter = 0
 		self.is_last_attack_frame = False
 

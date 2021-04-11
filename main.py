@@ -54,7 +54,7 @@ class Game():
 		hero = player.Player(self.screen)
 		#all_sprites.add(hero)
 		r,g,b,_	= pygame.Color(system.BACKGROUND_COLOR)
-		for i in range(4):
+		for i in range(system.ENEMY_COUNT):
 			mob = enemy.Enemy(all_sprites, enemys_sprites, enemy_bullet_sprites)
 			all_sprites.add(mob)
 			enemys_sprites.add(mob)
