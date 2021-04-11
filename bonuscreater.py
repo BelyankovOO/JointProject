@@ -1,6 +1,6 @@
 from bonuses import *
 
-bonuses_list = [InvulnerableBonus]
+bonuses_list = [InvulnerableBonus, LifeBonus]
 
 
 class BonusCreater(object):

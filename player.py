@@ -75,8 +75,7 @@ class Player(pygame.sprite.Sprite):
 			# tick cooldowns
 			utility.cooldown_tick(self.cooldowns, self.delta_time, {'hit_image_swap': self.hit_image_swap})
 			# END InvulnerableBonus
-			if self.have_InvulnerableBonus and not self.isInvulnerable():
-				self.have_InvulnerableBonus = False
+			self.updateInvulnerableBonus()
 			if not self.is_reflecting:
 				if not (keystate[pygame.K_LEFT] and keystate[pygame.K_RIGHT]):
 					if keystate[pygame.K_LEFT]:
@@ -231,3 +230,7 @@ class Player(pygame.sprite.Sprite):
 		self.cooldowns['hit_image_swap'] = system.PLAYER_ANIMATION_FLICKER_ROTATION
 		self.drawable = False
 		self.have_InvulnerableBonus = True
+
+	def updateInvulnerableBonus(self):
+		if self.have_InvulnerableBonus and not self.isInvulnerable():
+			self.have_InvulnerableBonus = False
