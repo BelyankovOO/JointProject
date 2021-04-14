@@ -16,6 +16,7 @@ sound_dir = system.SOUNDS_FOLDER+"background/"
 image_dir = system.IMAGES_FOLDER+"cooldown_animation/"
 
 image_cooldown = utility.load_images_by_dir(image_dir)
+copy_of_image_cooldown = utility.load_images_by_dir(image_dir)
 
 class Game():
 	def __init__(self):
@@ -54,8 +55,9 @@ class Game():
 		enemy_bullet_sprites = pygame.sprite.Group()    
 		self.background.fill(pygame.Color(system.BACKGROUND_COLOR))
 		hero = player.Player(self.screen)
-		cooldown_1 = cooldown_animation.CooldownAnimation(image_cooldown[0], 3, (system.WIN_WIDTH - 100, 40))
-		all_sprites.add(cooldown_1)
+
+		cooldown_1 = cooldown_animation.CooldownAnimation(image_cooldown[0], copy_of_image_cooldown[0], 3, (system.WIN_WIDTH - 100, 40))
+		
 		#all_sprites.add(hero)
 		r,g,b,_	= pygame.Color(system.BACKGROUND_COLOR)
 		for i in range(4):
@@ -91,8 +93,10 @@ class Game():
 			
 			hero.update()
 			all_sprites.update()
+			cooldown_1.update()
 			
 			all_sprites.draw(self.screen)
+			cooldown_1.draw(self.screen)
 			if hero.drawable:
 				self.screen.blit(hero.image, hero.rect)
 			pygame.display.update()
