@@ -95,8 +95,7 @@ class Player(pygame.sprite.Sprite):
 						self.on_ground = False
 						self.speed_y = -system.PLAYER_JUMP
 						self.curr_state = 'jump'
-						self.sound_jump.play()
-						
+						self.sound_jump.play()	
 				if keystate[pygame.K_SPACE] and self.cooldowns['reflect_cd']==0:
 					self.curr_state='attack'
 					self.is_reflecting = True
@@ -212,6 +211,10 @@ class Player(pygame.sprite.Sprite):
 	
 	def getCenter(self):
 		return (self.rect.centerx, self.rect.centery)
+
+	def get_player_information(self):
+		return (self.rect.centerx, self.rect.centery+1.2*self.ver_offset, self.direction)
+		
 
 	def getDamage(self):
 		self.lives.decrease_number_of_lives()

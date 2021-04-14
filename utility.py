@@ -1,5 +1,6 @@
 import pygame
 import os
+import math
 
 '''
 cooldown_tick(cooldowns, delta, callbacks={})
@@ -35,4 +36,10 @@ def load_images_by_dir_right(directory):
 			image_list[0].append(im_left)
 			image_list[1].append(im_right)
 	return image_list
+
+
+def vector_normalization(vector):
+	module = math.sqrt(vector[0]**2+vector[1]**2)
+	normalized_vector = (vector[0]/module, vector[1]/module)
+	return normalized_vector	
 
