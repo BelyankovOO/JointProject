@@ -1,9 +1,12 @@
-import pygame
-import system
-import weapon
-import utility
-import lives
 import math
+import os
+
+import pygame
+
+import lives
+import system
+import utility
+import weapon
 
 image_dir = system.IMAGES_FOLDER+"hero/"
 image_hero_cut_ratio = (0.09,0.12)
@@ -42,21 +45,24 @@ class Player(pygame.sprite.Sprite):
 		self.lives = lives.Lives()
 		self.invulnerability = False
 		self.width, self.height = self.image.get_size()
-		self.hor_offset = int(self.width*image_hero_cut_ratio[0])
-		self.ver_offset = int(self.height*image_hero_cut_ratio[1])
-		self.direction = 1 # 0 -- left  ; 1 -- right
+		self.hor_offset = int(self.width * image_hero_cut_ratio[0])
+		self.ver_offset = int(self.height * image_hero_cut_ratio[1])
+		self.direction = 1  # 0 -- left  ; 1 -- right
 		self.image_counter = 0
 		self.curr_state = 'idle'
 		self.prev_state = 'idle'
 		self.is_reflecting = False
+		self.have_InvulnerableBonus = False
 		self.is_last_attack_frame = False
 		self.drawable = True
 		self.dead = False
 		self.dying = False
-		self.sound_sword_hit = pygame.mixer.Sound(sound_dir+"sword_hit.flac")
-		self.sound_jump = pygame.mixer.Sound(sound_dir+"jump.ogg")
-		self.sound_hurt = pygame.mixer.Sound(sound_dir+"hurt.wav")
-		self.sound_step = pygame.mixer.Sound(sound_dir+"step.ogg")
+		print(os.getcwd(), sound_dir)
+
+		self.sound_sword_hit = pygame.mixer.Sound(os.path.join(sound_dir, "sword_hit.flac"))
+		self.sound_jump = pygame.mixer.Sound(sound_dir + "jump.ogg")
+		self.sound_hurt = pygame.mixer.Sound(sound_dir + "hurt.wav")
+		self.sound_step = pygame.mixer.Sound(sound_dir + "step.ogg")
 
 	def update(self):
 		if (not self.dying):
@@ -66,8 +72,10 @@ class Player(pygame.sprite.Sprite):
 			now = pygame.time.get_ticks()
 			self.delta_time = now - self.timer_last;
 			self.timer_last = now
-			#tick cooldowns
-			utility.cooldown_tick(self.cooldowns, self.delta_time, {'hit_image_swap':self.hit_image_swap})
+			# tick cooldowns
+			utility.cooldown_tick(self.cooldowns, self.delta_time, {'hit_image_swap': self.hit_image_swap})
+			# END InvulnerableBonus
+			self.updateInvulnerableBonus()
 			if not self.is_reflecting:
 				if not (keystate[pygame.K_LEFT] and keystate[pygame.K_RIGHT]):
 					if keystate[pygame.K_LEFT]:
@@ -124,7 +132,6 @@ class Player(pygame.sprite.Sprite):
 			self.on_ground = True
 			self.speed_y = 0  
 
-
 	def shoot(self, all_sprites, weapon_sprites):
 		if (self.cooldowns['shoot']==0):
 			weapon_x = weapon.Weapon(self.rect.centerx, self.rect.centery)
@@ -172,26 +179,25 @@ class Player(pygame.sprite.Sprite):
 					self.image = images_idle[self.direction][im_counter]
 					self.mask = pygame.mask.from_surface(self.image)
 		else:
-			self.image_counter +=1*system.PLAYER_ANIMATION_SPEED_DIE
+			self.image_counter += 1 * system.PLAYER_ANIMATION_SPEED_DIE
 			im_counter = math.floor(self.image_counter)
-			if im_counter>=images_die_len:
-				im_counter = images_die_len-1
+			if im_counter >= images_die_len:
+				im_counter = images_die_len - 1
 			self.image = images_die[self.direction][im_counter]
 			self.mask = pygame.mask.from_surface(self.image)
-			if self.image_counter>images_die_len+15:
+			if self.image_counter > images_die_len + 15:
 				self.dead = True
 
 	def invulnerable(self):
-		#self.image = image_invulnerable
+		# self.image = image_invulnerable
 		self.mask = pygame.mask.from_surface(self.image)
-		self.cooldowns['invulnerable_time'] = system.PLAYER_INVULNERABLE_TIME		
+		self.cooldowns['invulnerable_time'] = system.PLAYER_INVULNERABLE_TIME
 		self.cooldowns['hit_image_swap'] = system.PLAYER_ANIMATION_FLICKER_ROTATION
 		self.sound_hurt.play()
-		self.drawable=False
-		
+		self.drawable = False
 
 	def isInvulnerable(self):
-		return self.cooldowns['invulnerable_time']>0	
+		return self.cooldowns['invulnerable_time'] > 0
 
 	def isAlive(self):
 		return not self.dead	
@@ -204,7 +210,7 @@ class Player(pygame.sprite.Sprite):
 			self.drawable=True
 	
 	def getCenter(self):
-		return (self.rect.centerx, self.rect.centery+1.2*self.ver_offset)
+		return (self.rect.centerx, self.rect.centery)
 
 	def get_player_information(self):
 		return (self.rect.centerx, self.rect.centery+1.2*self.ver_offset, self.direction)
@@ -217,3 +223,17 @@ class Player(pygame.sprite.Sprite):
 				self.invulnerable()
 			else: 
 				self.dying = True
+
+	def getLifeBonus(self):
+		self.lives.increase_number_of_lives()
+
+	def getInvulnerableBonus(self):
+		self.mask = pygame.mask.from_surface(self.image)
+		self.cooldowns['invulnerable_time'] = system.BONUS_INVULNERABLE_TIME
+		self.cooldowns['hit_image_swap'] = system.PLAYER_ANIMATION_FLICKER_ROTATION
+		self.drawable = False
+		self.have_InvulnerableBonus = True
+
+	def updateInvulnerableBonus(self):
+		if self.have_InvulnerableBonus and not self.isInvulnerable():
+			self.have_InvulnerableBonus = False

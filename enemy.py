@@ -14,6 +14,7 @@ class Enemy(pygame.sprite.Sprite):
 		pygame.sprite.Sprite.__init__(self)
 		self.all_sprites = all_sprites
 		self.enemy_bullet_sprites = enemy_bullet_sprites
+		self.personal_bullet_sprites = pygame.sprite.Group()
 		self.position = random.choice([0, 1])
 		self.y = -100
 		if self.position == 1:
@@ -34,7 +35,7 @@ class Enemy(pygame.sprite.Sprite):
 		self.stopped = False
 		self.kill_flag = self.two_enemy_in_one_stop_position(enemy_sprites, self.stop_position)
 		self.last_update = pygame.time.get_ticks()
-		self.number_of_bullets = 4 
+		self.number_of_bullets = system.ENEMY_NUMBER_OF_BULLETS
 		self.image_counter = 0
 		self.is_last_attack_frame = False
 		self.player = player
@@ -55,7 +56,9 @@ class Enemy(pygame.sprite.Sprite):
 					self.image_counter = 0
 					self.last_update = now 
 					self.number_of_bullets -= 1
-					self.shoot() 	
+					self.shoot()
+			if len(self.personal_bullet_sprites) == 0 and self.number_of_bullets == 0:
+				self.number_of_bullets += 1
 
 	def two_enemy_in_one_stop_position(self, enemy_sprites, stop_position):
 		for enemy in enemy_sprites:
@@ -68,6 +71,7 @@ class Enemy(pygame.sprite.Sprite):
 		bullet = enemy_weapon.EnemyWeapon(self.position, self.rect.centery, self.width-self.hor_offset, self.player.get_player_information())
 		self.all_sprites.add(bullet)
 		self.enemy_bullet_sprites.add(bullet)
+		self.personal_bullet_sprites.add(bullet)
 
 	def start_shoot_animation(self):
 		self.is_last_attack_frame = False

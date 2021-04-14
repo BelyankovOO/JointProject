@@ -17,6 +17,8 @@ BACKGROUND_COLOR = "#004400"
 COLOR_FILL_SPEED = 0.3
 GRAVITY = 0.5
 
+ENEMY_COUNT = 4
+ENEMY_NUMBER_OF_BULLETS = 4
 ENEMY_WIDTH = 20
 ENEMY_HEIGHT = 32
 ENEMY_COLOR = "#ff0000"
@@ -39,7 +41,19 @@ IMAGES_FOLDER = "./images/"
 SOUNDS_FOLDER = "./sounds/"
 
 NUMBER_OF_LIVES = 3
-LIVE_POSITION_WIDHT = WIN_WIDTH - 100
+MAX_NUMBER_OF_LIVES = 4
+LIVE_POSITION_WIDHT = WIN_WIDTH - 30 * MAX_NUMBER_OF_LIVES
 LIVE_POSITION_HEIGHT = 5
 
 SOUND_RUN_CD = 300
+
+#BONUS
+BONUS_SPAWN_CD = 3 # seconds ПОЯВЛЕНИЕ НОВОГО БОНУСА
+BONUS_HIDE_TIME = 1.5 # seconds ИСЧЕЗНОВЕНИЕ БОНУСА
+BONUS_BLINKING_BARRIER = .80 # % - процент прошедшего времени, когда начинает мигать
+BONUS_BLINKING_FREQUENCY = 5 # Частота мерцания
+BONUS_INVULNERABLE_TIME = 4000 # Продолжительность режима неуязвимости
+
+#LEADERBOARD
+LEADERBOARD_MAX_ROW = 7 # Макс число строк в таблице лидерборда
+

@@ -19,5 +19,9 @@ class Lives():
 	def decrease_number_of_lives(self):
 		self.number_of_lives -= 1
 
+	def increase_number_of_lives(self):
+		if self.number_of_lives < system.MAX_NUMBER_OF_LIVES:
+			self.number_of_lives += 1
+
 	def check_number_of_of_lives(self):
 		return self.number_of_lives			
