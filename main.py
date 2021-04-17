@@ -8,7 +8,6 @@ import system
 import player
 import enemy
 from leaderboard import Leaderboard
-import weapon
 import enemy_weapon
 import cooldown_animation
 import utility
@@ -56,13 +55,13 @@ class Game():
 		
 	def game_loop(self):
 		all_sprites = pygame.sprite.Group()
-		weapons_sprites = pygame.sprite.Group()
-
 		enemys_sprites = pygame.sprite.Group()
 		enemy_bullet_sprites = pygame.sprite.Group()
 		bonus_sprites = pygame.sprite.Group()
+		haduken_sprites = pygame.sprite.Group()
+
 		self.background.fill(pygame.Color(system.BACKGROUND_COLOR))
-		hero = player.Player(self.screen)
+		hero = player.Player(self.screen, all_sprites, haduken_sprites)
 
 		cooldown_1 = cooldown_animation.CooldownAnimation(image_cooldown[0], copy_of_image_cooldown[0], 3, (system.WIN_WIDTH - 100, 40))
 		
@@ -87,9 +86,7 @@ class Game():
 					self.running = False
 					self.game_exit = True
 				elif event.type == pygame.KEYDOWN:
-					if event.key == pygame.K_x:
-						hero.shoot(all_sprites, weapons_sprites)
-					elif event.key == pygame.K_ESCAPE:
+					if event.key == pygame.K_ESCAPE:
 						self.pause_menu_loop()
 			
 			if hero.dying:

@@ -1,12 +1,10 @@
 import math
 import os
-
 import pygame
-
 import lives
 import system
 import utility
-import weapon
+import range_attack
 
 image_dir = system.IMAGES_FOLDER+"hero/"
 image_hero_cut_ratio = (0.09,0.12)
@@ -28,7 +26,7 @@ images_die_len = len(images_die[0])
 sound_dir = system.SOUNDS_FOLDER+"hero/"
 
 class Player(pygame.sprite.Sprite):
-	def __init__(self, screen):
+	def __init__(self, screen, all_sprites, haduken_sprites):
 		pygame.sprite.Sprite.__init__(self)
 		self.image = images_idle[1][0]
 		self.mask = pygame.mask.from_surface(self.image)
@@ -57,7 +55,8 @@ class Player(pygame.sprite.Sprite):
 		self.drawable = True
 		self.dead = False
 		self.dying = False
-		print(os.getcwd(), sound_dir)
+		self.all_sprites = all_sprites
+		self.haduken_sprites = haduken_sprites
 
 		self.sound_sword_hit = pygame.mixer.Sound(os.path.join(sound_dir, "sword_hit.flac"))
 		self.sound_jump = pygame.mixer.Sound(sound_dir + "jump.ogg")
@@ -101,6 +100,8 @@ class Player(pygame.sprite.Sprite):
 					self.is_reflecting = True
 					self.sound_sword_hit.play()
 					self.reflect()
+				if keystate[pygame.K_LSHIFT]:
+					self.create_haduken()	
 			if not self.on_ground:
 				self.speed_y += system.GRAVITY  
 			self.rect.centerx  += self.speed_x
@@ -132,12 +133,11 @@ class Player(pygame.sprite.Sprite):
 			self.on_ground = True
 			self.speed_y = 0  
 
-	def shoot(self, all_sprites, weapon_sprites):
-		if (self.cooldowns['shoot']==0):
-			weapon_x = weapon.Weapon(self.rect.centerx, self.rect.centery)
-			all_sprites.add(weapon_x)
-			weapon_sprites.add(weapon_x)      
-			self.cooldowns['shoot']=system.PLAYER_SHOOT_CD 
+	def create_haduken(self):
+		haduken = range_attack.RangeAttack(self.rect.centerx, self.rect.centery, self.direction)
+		self.all_sprites.add(haduken)
+		self.haduken_sprites.add(haduken)
+
 
 	def reflect(self):
 		if (self.cooldowns['reflect_cd']==0):
