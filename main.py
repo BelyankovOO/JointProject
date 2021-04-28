@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-# Импортируем библиотеку pygame
 import os
 import locale
 import pygame
@@ -10,7 +8,6 @@ import system
 import player
 import enemy
 from leaderboard import Leaderboard
-import enemy_weapon
 import cooldown_animation
 import utility
 import bonuscreater
@@ -23,6 +20,7 @@ en = 'locales/en_US'
 
 image_cooldown = utility.load_images_by_dir(image_dir)
 copy_of_image_cooldown = utility.load_images_by_dir(image_dir)
+
 
 class Game():
     """Application's main window class
