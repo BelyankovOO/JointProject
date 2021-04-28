@@ -2,15 +2,15 @@ import pygame
 import os
 import math
 
-'''
-cooldown_tick(cooldowns, delta, callbacks={})
-cooldowns - словарь {имя : текущее время}
-delta - текущая разница во времени (то, что надо отнять от всех КД)
-callbacks - словарь {имя : функция}, вызвать функцию, если соответствующий таймер стал равным 0
-'''
-
 
 def cooldown_tick(cooldowns, delta, callbacks={}):
+    """
+    Decrease cooldown and if cooldown equal zero call function.
+
+    :param cooldowns: dict
+    :param delta: decrease from all cooldown
+    :param callback: callback function
+    """
     for name in cooldowns:
         if cooldowns[name] > 0:
             cooldowns[name] -= delta
@@ -22,6 +22,11 @@ def cooldown_tick(cooldowns, delta, callbacks={}):
 
 
 def load_images_by_dir(directory):
+    """
+    Load images in one direction.
+
+    :param directory: directiory with image
+    """
     image_names = os.listdir(directory)
     image_list = []
     for file in image_names:
@@ -31,6 +36,11 @@ def load_images_by_dir(directory):
 
 
 def load_images_by_dir_right(directory):
+    """
+    Load images in two direction (left and right).
+
+    :param directory: directiory with image
+    """
     image_names = os.listdir(directory)
     image_list = [[], []]
     for file in image_names:
@@ -43,6 +53,11 @@ def load_images_by_dir_right(directory):
 
 
 def vector_normalization(vector):
+    """
+    Normalize vector.
+
+    :param vector: current vector
+    """
     module = math.sqrt(vector[0]**2 + vector[1]**2)
     normalized_vector = (vector[0] / module, vector[1] / module)
     return normalized_vector

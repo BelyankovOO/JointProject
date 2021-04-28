@@ -1,3 +1,4 @@
+"""JointProject NinjaSamurai."""
 import pygame
 import system
 import random
@@ -11,7 +12,17 @@ images_enemy_len = len(images_enemy[0])
 
 
 class Enemy(pygame.sprite.Sprite):
+    """
+    Enemy class.
+
+    :param all_sprites: group of all sprites
+    :param enemy_sprites: group of enemy sprites
+    :param enemy_bullet_sprites: group of enemy bullet sprites
+    :param player: controlled model
+    """
+    
     def __init__(self, all_sprites, enemy_sprites, enemy_bullet_sprites, player):
+        """Enemy init."""
         pygame.sprite.Sprite.__init__(self)
         self.all_sprites = all_sprites
         self.enemy_bullet_sprites = enemy_bullet_sprites
@@ -42,6 +53,7 @@ class Enemy(pygame.sprite.Sprite):
         self.player = player
 
     def update(self):
+        """Enemy update."""
         if self.kill_flag:
             self.kill()
         self.rect.y += self.speed_y
@@ -62,6 +74,12 @@ class Enemy(pygame.sprite.Sprite):
                 self.number_of_bullets += 1
 
     def two_enemy_in_one_stop_position(self, enemy_sprites, stop_position):
+        """
+        Check if two enemy sprites crossed.
+
+        :param enemy_sprites: group of enemy sprites
+        :param stop_position: position of stopping
+        """
         for enemy in enemy_sprites:
             if self.stop_position in range(enemy.stop_position - system.ENEMY_HEIGHT,
                                         enemy.stop_position + system.ENEMY_HEIGHT) and self.position == enemy.position:
@@ -69,12 +87,14 @@ class Enemy(pygame.sprite.Sprite):
         return False
 
     def shoot(self):
+        """Enemy shoot."""
         bullet = enemy_weapon.EnemyWeapon(self.position, self.rect.centery, self.width - self.hor_offset, self.player.get_player_information())
         self.all_sprites.add(bullet)
         self.enemy_bullet_sprites.add(bullet)
         self.personal_bullet_sprites.add(bullet)
 
     def start_shoot_animation(self):
+        """Start shooting animation."""
         self.is_last_attack_frame = False
         self.image_counter += 1 * system.ENEMY_ANIMATION_SPEED_ATTACK
         im_counter = int(self.image_counter) % images_enemy_len

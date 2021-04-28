@@ -1,3 +1,4 @@
+"""JointProject NinjaSamurai."""
 import pygame
 from datetime import datetime
 import os
@@ -7,7 +8,14 @@ FILE_NAME = "./leaderboard/highscore.json"
 
 
 class Leaderboard(object):
+    """
+    Leaderboard class
+
+    :param file: name of file
+    """
+
     def __init__(self, file_name=FILE_NAME):
+        """Init leaderboard."""
         self.font = pygame.font.SysFont("Century Gothic", 15)
         self.file_name = file_name
         if not os.path.isfile(self.file_name):
@@ -16,16 +24,28 @@ class Leaderboard(object):
             self.scores = json.load(f)
 
     def on_empty_file(self):
+        """Fill empty file."""
         tmp = {'Alex': (222, '22.04.1997'), 'Oleg': (111, '09.04.1998')}
         with open(self.file_name, "w") as f:
             f.write(json.dumps(tmp))
 
     def save_score(self, name, score):
+        """
+        Save score from last game.
+
+        :param name: name of player
+        :param score: score of player
+        """
         self.scores[name] = (score, str(datetime.date(datetime.now())))
         with open(self.file_name, 'r+') as f:
             f.write(json.dumps(self.scores))
 
     def add_leader_table(self, table):
+        """
+        Add new leader to table.
+
+        :param table: previos view of table
+        """
         self.scores_list = self.scores.items()
         self.scores_list = sorted(self.scores_list, key=lambda x: x[1][0], reverse=False)
         self.scores_list = list(self.scores_list)[:system.LEADERBOARD_MAX_ROW]
