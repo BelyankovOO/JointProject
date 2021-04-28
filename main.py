@@ -11,10 +11,16 @@ import enemy
 from leaderboard import Leaderboard
 import weapon
 import enemy_weapon
+import cooldown_animation
+import utility
 import bonuscreater
 
 
 sound_dir = system.SOUNDS_FOLDER+"background/"
+image_dir = system.IMAGES_FOLDER+"cooldown_animation/"
+
+image_cooldown = utility.load_images_by_dir(image_dir)
+copy_of_image_cooldown = utility.load_images_by_dir(image_dir)
 
 class Game():
 	def __init__(self):
@@ -67,15 +73,19 @@ class Game():
 	def game_loop(self):
 		all_sprites = pygame.sprite.Group()
 		weapons_sprites = pygame.sprite.Group()
+
 		enemys_sprites = pygame.sprite.Group()
 		enemy_bullet_sprites = pygame.sprite.Group()
 		bonus_sprites = pygame.sprite.Group()
 		self.background.fill(pygame.Color(system.BACKGROUND_COLOR))
 		hero = player.Player(self.screen)
+
+		cooldown_1 = cooldown_animation.CooldownAnimation(image_cooldown[0], copy_of_image_cooldown[0], 3, (system.WIN_WIDTH - 100, 40))
+		
 		#all_sprites.add(hero)
 		r,g,b,_	= pygame.Color(system.BACKGROUND_COLOR)
 		for i in range(system.ENEMY_COUNT):
-			mob = enemy.Enemy(all_sprites, enemys_sprites, enemy_bullet_sprites)
+			mob = enemy.Enemy(all_sprites, enemys_sprites, enemy_bullet_sprites, hero)
 			all_sprites.add(mob)
 			enemys_sprites.add(mob)
 
@@ -111,10 +121,12 @@ class Game():
 			hero.update(self.game_control)
 			bonus_sprites.update()
 			all_sprites.update()
-
+			cooldown_1.update()
+      
+			cooldown_1.draw(self.screen)
 			bonus_creater.draw(self.screen)
 			all_sprites.draw(self.screen)
-
+      
 			if hero.drawable:
 				self.screen.blit(hero.image, hero.rect)
 			pygame.display.update()

@@ -10,7 +10,7 @@ images_enemy = utility.load_images_by_dir_right(image_dir)
 images_enemy_len = len(images_enemy[0])
 
 class Enemy(pygame.sprite.Sprite):
-	def __init__(self, all_sprites, enemy_sprites, enemy_bullet_sprites):
+	def __init__(self, all_sprites, enemy_sprites, enemy_bullet_sprites, player):
 		pygame.sprite.Sprite.__init__(self)
 		self.all_sprites = all_sprites
 		self.enemy_bullet_sprites = enemy_bullet_sprites
@@ -38,6 +38,7 @@ class Enemy(pygame.sprite.Sprite):
 		self.number_of_bullets = system.ENEMY_NUMBER_OF_BULLETS
 		self.image_counter = 0
 		self.is_last_attack_frame = False
+		self.player = player
 
 	def update(self):
 		if self.kill_flag:
@@ -67,7 +68,7 @@ class Enemy(pygame.sprite.Sprite):
 
 
 	def shoot(self):
-		bullet = enemy_weapon.EnemyWeapon(self.position, self.rect.centery, self.width-self.hor_offset)
+		bullet = enemy_weapon.EnemyWeapon(self.position, self.rect.centery, self.width-self.hor_offset, self.player.get_player_information())
 		self.all_sprites.add(bullet)
 		self.enemy_bullet_sprites.add(bullet)
 		self.personal_bullet_sprites.add(bullet)

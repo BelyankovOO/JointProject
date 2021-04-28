@@ -5,7 +5,7 @@ import pygame
 import system
 import utility
 
-image_bonus_resize = (40, 40)
+image_bonus_resize = (30, 30)
 
 
 class BonusBase(pygame.sprite.Sprite):
