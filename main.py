@@ -119,10 +119,9 @@ class Game():
 			bonus_sprites.update()
 			all_sprites.update()
 			cooldown_1.update()
-      
-			cooldown_1.draw(self.screen)
-			bonus_creater.draw(self.screen)
-			all_sprites.draw(self.screen)
+      cooldown_1.draw(self.screen)
+      bonus_creater.draw(self.screen)
+      all_sprites.draw(self.screen)
       
 			if hero.drawable:
 				self.screen.blit(hero.image, hero.rect)
@@ -446,5 +445,5 @@ class Game():
 		return
 	
 if __name__ == "__main__":
-	game = Game()
-	game.run()
+    game = Game()
+    game.run()

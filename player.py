@@ -6,24 +6,25 @@ import system
 import utility
 import range_attack
 
-image_dir = system.IMAGES_FOLDER+"hero/"
-image_hero_cut_ratio = (0.09,0.12)
-images_idle    = utility.load_images_by_dir_right(image_dir+"Martial/"+"Idle/")
+image_dir = system.IMAGES_FOLDER + "hero/"
+image_hero_cut_ratio = (0.09, 0.12)
+images_idle = utility.load_images_by_dir_right(image_dir + "Martial/" + "Idle/")
 images_idle_len = len(images_idle[0])
-images_run = utility.load_images_by_dir_right(image_dir+"Martial/"+"Run/")
+images_run = utility.load_images_by_dir_right(image_dir + "Martial/" + "Run/")
 images_run_len = len(images_run[0])
-images_attack  = utility.load_images_by_dir_right(image_dir+"Martial/"+"Attack1/")
+images_attack = utility.load_images_by_dir_right(image_dir + "Martial/" + "Attack1/")
 images_attack_len = len(images_attack[0])
-images_jump  = utility.load_images_by_dir_right(image_dir+"Martial/"+"Jump/")
+images_jump = utility.load_images_by_dir_right(image_dir + "Martial/" + "Jump/")
 images_jump_len = len(images_jump[0])
-images_jump  = utility.load_images_by_dir_right(image_dir+"Martial/"+"Jump/")
+images_jump = utility.load_images_by_dir_right(image_dir + "Martial/" + "Jump/")
 images_jump_len = len(images_jump[0])
-images_fall  = utility.load_images_by_dir_right(image_dir+"Martial/"+"Fall/")
+images_fall = utility.load_images_by_dir_right(image_dir + "Martial/" + "Fall/")
 images_fall_len = len(images_fall[0])
-images_die  = utility.load_images_by_dir_right(image_dir+"Martial/"+"Death/")
+images_die = utility.load_images_by_dir_right(image_dir + "Martial/" + "Death/")
 images_die_len = len(images_die[0])
 
-sound_dir = system.SOUNDS_FOLDER+"hero/"
+sound_dir = system.SOUNDS_FOLDER + "hero/"
+
 
 class Player(pygame.sprite.Sprite):
 	def __init__(self, screen, all_sprites, haduken_sprites):

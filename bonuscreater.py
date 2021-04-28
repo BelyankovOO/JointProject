@@ -1,6 +1,9 @@
-from bonuses import *
+import bonuses
+import pygame
+import random
+import system
 
-bonuses_list = [InvulnerableBonus, LifeBonus]
+bonuses_list = [bonuses.InvulnerableBonus, bonuses.LifeBonus]
 
 
 class BonusCreater(object):
