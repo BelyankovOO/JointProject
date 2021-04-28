@@ -23,7 +23,8 @@ class BonusBase(pygame.sprite.Sprite):
 
         # Set position
         self.bot_y, self.top_y = 500, 600
-        self.left_x, self.right_x = 0, system.WIN_WIDTH - self.image.get_width()
+        self.left_x, self.right_x = 0, system.WIN_WIDTH \
+            - self.image.get_width()
         self.rect.y = -self.image.get_width()
         self.rect.x = random.randint(self.left_x, self.right_x)
         self.create_time = pygame.time.get_ticks()
@@ -40,14 +41,15 @@ class BonusBase(pygame.sprite.Sprite):
         self.action()
 
     def update(self):
-        if self.rect.bottom > system.WIN_HEIGHT: 
+        if self.rect.bottom > system.WIN_HEIGHT:
             self.speed_y = 0
         self.rect.y += self.speed_y
         now = pygame.time.get_ticks()
         second_after_create = (now - self.create_time) / 1000
         if self.is_taken:
             self.kill()
-        elif system.BONUS_HIDE_TIME * system.BONUS_BLINKING_BARRIER <= second_after_create < system.BONUS_HIDE_TIME and \
+        elif system.BONUS_HIDE_TIME * system.BONUS_BLINKING_BARRIER \
+                <= second_after_create < system.BONUS_HIDE_TIME and \
                 now % system.BONUS_BLINKING_FREQUENCY == 0:
             self.drawable = not self.drawable
         elif second_after_create >= system.BONUS_HIDE_TIME:
