@@ -32,10 +32,9 @@ ENEMY_WEAPON_COOLDOWN = 3000
 SHURIKEN_ROTATION = 100
 SHURIKEN_COOLDOWN_AFTER_REFLECT = 5000
 
-WEAPON_WIDTH = 5
-WEAPON_HEIGHT = 200
-WEAPON_COLOR = "#0000ff"
-WEAPON_SPEED = 3
+HADUKEN_SPEED_ANIMATION = 0.1
+HADUKEN_SPEED = 5
+HADUKEN_CD = 3000
 
 IMAGES_FOLDER = "./images/"
 SOUNDS_FOLDER = "./sounds/"
@@ -48,11 +47,12 @@ LIVE_POSITION_HEIGHT = 5
 SOUND_RUN_CD = 300
 
 #BONUS
-BONUS_SPAWN_CD = 3 # seconds ПОЯВЛЕНИЕ НОВОГО БОНУСА
-BONUS_HIDE_TIME = 1.5 # seconds ИСЧЕЗНОВЕНИЕ БОНУСА
+BONUS_SPAWN_CD = 20 # seconds ПОЯВЛЕНИЕ НОВОГО БОНУСА
+BONUS_HIDE_TIME = 2 # seconds ИСЧЕЗНОВЕНИЕ БОНУСА
 BONUS_BLINKING_BARRIER = .80 # % - процент прошедшего времени, когда начинает мигать
 BONUS_BLINKING_FREQUENCY = 5 # Частота мерцания
 BONUS_INVULNERABLE_TIME = 4000 # Продолжительность режима неуязвимости
+BONUS_START_SPEED = 6
 
 #LEADERBOARD
 LEADERBOARD_MAX_ROW = 7 # Макс число строк в таблице лидерборда
