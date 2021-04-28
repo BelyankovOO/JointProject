@@ -64,7 +64,7 @@ class Player(pygame.sprite.Sprite):
 		self.sound_hurt = pygame.mixer.Sound(sound_dir + "hurt.wav")
 		self.sound_step = pygame.mixer.Sound(sound_dir + "step.ogg")
 
-	def update(self):
+	def update(self, control):
 		if (not self.dying):
 			self.speed_x = 0
 			self.lives.draw(self.screen)
@@ -77,27 +77,27 @@ class Player(pygame.sprite.Sprite):
 			# END InvulnerableBonus
 			self.updateInvulnerableBonus()
 			if not self.is_reflecting:
-				if not (keystate[pygame.K_LEFT] and keystate[pygame.K_RIGHT]):
-					if keystate[pygame.K_LEFT]:
+				if not (keystate[control['Left']] and keystate[control['Right']]):
+					if keystate[control['Left']]:
 						self.speed_x = -system.PLAYER_SPEED
 						self.curr_state = 'run'
 						self.direction = 0
-					if keystate[pygame.K_RIGHT]:
+					if keystate[control['Right']]:
 						self.speed_x = system.PLAYER_SPEED
 						self.curr_state = 'run'
 						self.direction = 1
-					if not keystate[pygame.K_LEFT] and not keystate[pygame.K_RIGHT]:
+					if not keystate[control['Left']] and not keystate[control['Right']]:
 						self.curr_state = 'idle'
 				else:	
 					self.curr_state = 'idle'
-				if keystate[pygame.K_UP]:
+				if keystate[control['Up']]:
 					if self.on_ground:
 						self.on_ground = False
 						self.speed_y = -system.PLAYER_JUMP
 						self.curr_state = 'jump'
 						self.sound_jump.play()
 						
-				if keystate[pygame.K_SPACE] and self.cooldowns['reflect_cd']==0:
+				if keystate[control['Space']] and self.cooldowns['reflect_cd']==0:
 					self.curr_state='attack'
 					self.is_reflecting = True
 					self.sound_sword_hit.play()

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Импортируем библиотеку pygame
+import os
 import pygame
 import pygame_menu
 import system
@@ -11,6 +12,7 @@ from leaderboard import Leaderboard
 import weapon
 import enemy_weapon
 import bonuscreater
+
 
 sound_dir = system.SOUNDS_FOLDER+"background/"
 
@@ -23,21 +25,35 @@ class Game():
 		self.background.fill(pygame.Color(system.BACKGROUND_COLOR))
 		self.timer = pygame.time.Clock()  
 		self.font = pygame.font.SysFont("Arial", 18)
-		self.game_states = ['menu','game','game_over']
+		self.game_states = ['menu','game','game_over', 'round_win', 'setting', 'control']
 		self.game_state = 'menu'
 		self.game_exit = False
 		self.leaderboard = Leaderboard()
-		self.background_music = pygame.mixer.music.load(sound_dir+"background.mp3")
-		pygame.mixer.music.set_volume(0.02)
+		try:
+			self.background_music = pygame.mixer.music.load(sound_dir+"background.mp3")
+			pygame.mixer.music.play(loops=-1)
+			self.have_mixer=True
+		except(pygame.error):
+			self.have_mixer=False
+		self.game_control = {}
+		self.load_settings()
+		self.sound_in = True
+		self.sound_level = 0.02
+		self.difficulty = 1
+		self.controlButtons={}
 		return
 		
 	def run(self):
 		while (not self.game_exit):
-			if self.game_state=='menu':
+			if self.game_state == 'menu':
 				self.menu_loop()
-			elif self.game_state=='game':
+			elif self.game_state == 'setting': #rdt
+				self.setting_loop()
+			elif self.game_state == 'control': #rdt
+				self.control_loop()
+			elif self.game_state == 'game':
 				self.game_loop()
-			elif self.game_state=='game_over':
+			elif self.game_state == 'game_over':
 				self.game_over_loop()
 			elif self.game_state == 'round_win':
 				self.win_loop()
@@ -65,8 +81,6 @@ class Game():
 
 		#Bonus
 		bonus_creater = bonuscreater.BonusCreater(hero, bonus_sprites)
-
-		pygame.mixer.music.play(loops=-1)	
 		
 		self.running = True
 		self.start_time = pygame.time.get_ticks()
@@ -94,7 +108,7 @@ class Game():
 
 			bonus_creater.create_bonus()
 
-			hero.update()
+			hero.update(self.game_control)
 			bonus_sprites.update()
 			all_sprites.update()
 
@@ -131,8 +145,6 @@ class Game():
 				for one_bonus in hero_bonus_hits:
 					one_bonus.take_bonus()
 
-
-
 			if not hero.isAlive():
 				self.running = False
 				self.game_state='game_over'
@@ -146,18 +158,207 @@ class Game():
 				break
 			
 		return
-
+	
 	def menu_loop(self):
 		w, h = pygame.display.get_surface().get_size()
-		self.menu = pygame_menu.Menu(h, w, 'Hi', theme=pygame_menu.themes.THEME_SOLARIZED)
+		self.menu = pygame_menu.Menu('NinjaSamurai', w, h, theme=pygame_menu.themes.THEME_SOLARIZED)
 		self.menu.add.button('Play', self.start_the_game)
+		self.menu.add.button('Setting', self.start_setting) #rdt
 		self.menu.add.button('Quit', self.set_game_exit)
 		self.menu.mainloop(self.screen)
 		return
+
+	def load_settings(self):
+		if os.path.isfile('profile'):
+			file = open('profile')
+			lines = file.readlines()
+			self.difficulty=int(lines[0].strip())
+			self.sound_in = bool(int(lines[1].strip()))
+			self.sound_level = float(lines[2].strip())
+			if self.have_mixer:
+				if self.sound_in:
+					pygame.mixer.music.set_volume(self.sound_level)
+				else:
+					pygame.mixer.music.set_volume(0.0)
+			self.game_control['Left'] = pygame.key.key_code(lines[3].strip())
+			self.game_control['Right'] = pygame.key.key_code(lines[4].strip())
+			self.game_control['Up'] = pygame.key.key_code(lines[5].strip())
+			self.game_control['Down'] = pygame.key.key_code(lines[6].strip())
+			self.game_control['Space'] = pygame.key.key_code(lines[7].strip())
+			
+			file.close()
+		else:
+			file = open('profile','w')
+			file.write("1\n1\n0.02\nleft\nright\nup\ndown\nspace\n")
+			file.close()
+			self.load_settings()
 	
+	def save_settings_to_file(self):
+		file = open('profile','w')
+		file.write(str(self.difficulty)+'\n')
+		file.write(str(int(self.sound_in))+'\n')
+		file.write(str(self.sound_level)+'\n')
+		file.write(pygame.key.name(self.game_control['Left'])+'\n')
+		file.write(pygame.key.name(self.game_control['Right'])+'\n')
+		file.write(pygame.key.name(self.game_control['Up'])+'\n')
+		file.write(pygame.key.name(self.game_control['Down'])+'\n')
+		file.write(pygame.key.name(self.game_control['Space'])+'\n')
+		file.close()
+		return
+	
+	def save_setting(self):
+		data = self.menu.get_input_data()
+		self.difficulty = data['difficulty'][1]
+		self.save_settings_to_file()
+		self.load_settings()
+		self.exit_to_main_menu()
+		return
+
+	def change_sound(self, *kwargs):
+		self.sound_in = not self.sound_in
+		return
+
+	def make_default_value(self):
+		self.sound_in = True
+		self.difficulty = 1
+		self.sound_switch.set_default_value(self.sound_in)
+		self.difficulty_selector.set_default_value(self.difficulty)
+		self.menu.reset_value()
+		return
+
+	def setting_loop(self): #rdt
+		w, h = pygame.display.get_surface().get_size()
+		self.menu = pygame_menu.Menu('Setting', w, h, theme=pygame_menu.themes.THEME_SOLARIZED)
+		self.menu.add.button('Control', self.start_control)
+		items = [('Easy', 'EASY'), ('Medium', 'MEDIUM'), ('Hard', 'HARD')]
+		self.difficulty_selector = self.menu.add.selector( 'Select difficulty:\t', items, selector_id='difficulty', default=self.difficulty)
+		
+		self.sound_switch = self.menu.add.toggle_switch('Sound', self.sound_in, onchange=self.change_sound, toggleswitch_id='sound_in_id')
+		self.menu.add.button('Save', self.save_setting)
+		self.menu.add.button('Default', self.make_default_value)
+		self.menu.add.button('Close', self.exit_to_main_menu)
+		self.menu.mainloop(self.screen)
+		return
+
+	def save_control(self):
+		self.save_settings_to_file()
+		self.load_settings()
+		self.start_setting()
+		return
+
+	def default_control(self):
+		self.game_control['Left'] = pygame.key.key_code('left')
+		self.controlButtons['Left']._title = 'left'
+		self.game_control['Right'] = pygame.key.key_code('right')
+		self.controlButtons['Right']._title = 'right'
+		self.game_control['Up'] = pygame.key.key_code('up')
+		self.controlButtons['Up']._title = 'up'
+		self.game_control['Down'] = pygame.key.key_code('down')
+		self.controlButtons['Down']._title = 'down'
+		self.game_control['Space'] = pygame.key.key_code('space')
+		self.controlButtons['Space']._title = 'space'
+		return
+	
+	def control_up(self):
+		ok = True
+		while ok:
+			events = pygame.event.get();
+			for event in events:
+				if event.type == pygame.KEYDOWN:
+					if (event.key == pygame.K_ESCAPE):
+						ok = False
+						break
+					self.controlButtons['Up']._title = pygame.key.name(event.key)
+					self.game_control['Up'] = event.key
+					ok = False
+					break
+		return
+	
+	def control_down(self):
+		ok = True
+		while ok:
+			events = pygame.event.get();
+			for event in events:
+				if event.type == pygame.KEYDOWN:
+					if (event.key == pygame.K_ESCAPE):
+						ok = False
+						break
+					self.controlButtons['Down']._title = pygame.key.name(event.key)
+					self.game_control['Down'] = event.key
+					ok = False
+					break
+		return
+	
+	def control_left(self):
+		ok = True
+		while ok:
+			events = pygame.event.get();
+			for event in events:
+				if event.type == pygame.KEYDOWN:
+					if (event.key == pygame.K_ESCAPE):
+						ok = False
+						break
+					self.controlButtons['Left']._title = pygame.key.name(event.key)
+					self.game_control['Left'] = event.key
+					ok = False
+					break
+		return
+	
+	def control_right(self):
+		ok = True
+		while ok:
+			events = pygame.event.get();
+			for event in events:
+				if event.type == pygame.KEYDOWN:
+					if (event.key == pygame.K_ESCAPE):
+						ok = False
+						break
+					self.controlButtons['Right']._title = pygame.key.name(event.key)
+					self.game_control['Right'] = event.key
+					ok = False
+					break
+		return
+	
+	def control_space(self):
+		ok = True
+		while ok:
+			events = pygame.event.get();
+			for event in events:
+				if event.type == pygame.KEYDOWN:
+					if (event.key == pygame.K_ESCAPE):
+						ok = False
+						break
+					self.controlButtons['Space']._title = pygame.key.name(event.key)
+					self.game_control['Space'] = event.key
+					ok = False
+					break
+		return
+		
+	def control_loop(self): #rdt
+		w, h = pygame.display.get_surface().get_size()
+		
+		self.menu = pygame_menu.Menu('Control', w, h, theme=pygame_menu.themes.THEME_SOLARIZED, columns=3, rows=5)
+		self.menu.add.label('Run left:')
+		self.menu.add.label('Run right:')
+		self.menu.add.label('Jump:')
+		self.menu.add.label('Charge:')
+		self.menu.add.label('Attack:')
+		
+		self.controlButtons['Left']=self.menu.add.button(pygame.key.name(self.game_control['Left']), self.control_left)
+		self.controlButtons['Right']=self.menu.add.button(pygame.key.name(self.game_control['Right']), self.control_right)
+		self.controlButtons['Up']=self.menu.add.button(pygame.key.name(self.game_control['Up']), self.control_up)
+		self.controlButtons['Down']=self.menu.add.button(pygame.key.name(self.game_control['Down']), self.control_down)
+		self.controlButtons['Space']=self.menu.add.button(pygame.key.name(self.game_control['Space']), self.control_space)
+		
+		self.menu.add.button('Save', self.save_control)
+		self.menu.add.button('Default', self.default_control)
+		self.menu.add.button('Close', self.start_setting)
+		self.menu.mainloop(self.screen)
+		return
+
 	def game_over_loop(self):
 		w, h = pygame.display.get_surface().get_size()
-		self.menu = pygame_menu.Menu(h, w, 'Game OVER', theme=pygame_menu.themes.THEME_SOLARIZED)
+		self.menu = pygame_menu.Menu('Game OVER', w, h, theme=pygame_menu.themes.THEME_SOLARIZED)
 		self.menu.add.button('Restart', self.start_the_game)
 		self.menu.add.button('Go to main menu', self.exit_to_main_menu)
 		self.menu.add.button('Quit', self.set_game_exit)
@@ -169,9 +370,8 @@ class Game():
 
 	def win_loop(self):
 		w, h = pygame.display.get_surface().get_size()
-		self.menu = pygame_menu.Menu(h, w,
-									 f'YOU WIN! YOUR TIME: {int(self.game_time // 60)}.{round(self.game_time % 60)} '
-									 f'minutes', theme=pygame_menu.themes.THEME_SOLARIZED)
+		self.menu = pygame_menu.Menu(f'YOU WIN! YOUR TIME: {int(self.game_time // 60)}.{round(self.game_time % 60)} '
+									 f'minutes', w, h, theme=pygame_menu.themes.THEME_SOLARIZED)
 		self.menu.add_text_input('Name :', maxchar=10, onreturn=self.save_best_score, input_underline_len=20)
 		# print(self.menu.get_value())
 		self.menu.add.button('Restart', self.start_the_game)
@@ -185,7 +385,7 @@ class Game():
 	def leaderboard_loop(self):
 		w, h = pygame.display.get_surface().get_size()
 		self.menu.disable()
-		self.menu = pygame_menu.Menu(h, w, f'LEADERBOARD', theme=pygame_menu.themes.THEME_SOLARIZED)
+		self.menu = pygame_menu.Menu(f'LEADERBOARD', w, h, theme=pygame_menu.themes.THEME_SOLARIZED)
 		table = self.menu.add.table(table_id='LEADERBOARD', font_size=20, font_name='century gothic')
 		self.leaderboard.add_leader_table(table)
 		self.menu.add.button('Go to main menu', self.exit_to_main_menu)
@@ -195,7 +395,7 @@ class Game():
 	
 	def pause_menu_loop(self):
 		w, h = pygame.display.get_surface().get_size()
-		self.menu = pygame_menu.Menu(h, w, 'Pause', theme=pygame_menu.themes.THEME_SOLARIZED)
+		self.menu = pygame_menu.Menu('Pause', w, h, theme=pygame_menu.themes.THEME_SOLARIZED)
 		self.menu.add.button('Resume', self.menu.disable)
 		self.menu.add.button('Restart', self.start_the_game)
 		self.menu.add.button('Go to main menu', self.exit_to_main_menu)
@@ -207,7 +407,21 @@ class Game():
 		self.game_state='game'
 		self.menu.disable()
 		return
-	
+
+	def start_setting(self): #rdt
+		self.running = False
+		self.game_state = 'setting'
+		self.load_settings()
+		self.menu.disable()
+		return
+
+	def start_control(self): #rdt
+		self.running = False
+		self.game_state = 'control'
+		self.load_settings()
+		self.menu.disable()
+		return
+
 	def set_game_exit(self):
 		self.running = False
 		self.game_exit=True
@@ -217,6 +431,7 @@ class Game():
 	def exit_to_main_menu(self):
 		self.running = False
 		self.game_state='menu'
+		self.load_settings()
 		self.menu.disable()
 		return
 	
