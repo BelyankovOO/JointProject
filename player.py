@@ -100,7 +100,7 @@ class Player(pygame.sprite.Sprite):
 					self.is_reflecting = True
 					self.sound_sword_hit.play()
 					self.reflect()
-				if keystate[pygame.K_LSHIFT] and self.cooldowns['range_attack_cd']==0:
+				if keystate[control['Down']] and self.cooldowns['range_attack_cd']==0:
 					self.create_haduken()	
 			if not self.on_ground:
 				self.speed_y += system.GRAVITY  
