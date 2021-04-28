@@ -1,0 +1,9 @@
+>>> import main 
+pygame 2.0.1 (SDL 2.0.14, Python 3.9.2)
+Hello from the pygame community. https://www.pygame.org/contribute.html
+pygame-menu 4.0.2
+>>>	import player
+>>>	player = player.Player(None, None, None)
+
+
+

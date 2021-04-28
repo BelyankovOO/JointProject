@@ -117,6 +117,7 @@ class Game():
 			hero_bullets_hits = pygame.sprite.spritecollide(hero, enemy_bullet_sprites, False, collided=pygame.sprite.collide_mask)
 			enemy_hits = pygame.sprite.groupcollide(enemys_sprites, enemy_bullet_sprites, False, False, collided=pygame.sprite.collide_mask)
 			hero_bonus_hits = pygame.sprite.spritecollide(hero, bonus_sprites, False, collided=pygame.sprite.collide_mask)
+			haduken_hits = pygame.sprite.groupcollide(enemys_sprites, haduken_sprites, True, True, collided=pygame.sprite.collide_mask)
 			if enemy_hits:
 				for nindja in enemy_hits.keys():
 					for bullet in enemy_hits[nindja]:

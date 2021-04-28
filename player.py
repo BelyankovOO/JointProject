@@ -37,7 +37,7 @@ class Player(pygame.sprite.Sprite):
 		self.start_x =  self.rect.centerx
 		self.start_y =  self.rect.centery
 		self.on_ground = False
-		self.cooldowns = {'reflect_cd': 0 , 'shoot': 0, 'reflect_time' : 0, 'invulnerable_time': 0, 'hit_image_swap':0, 'sound_run_cd': 0}
+		self.cooldowns = {'reflect_cd': 0 , 'shoot': 0, 'reflect_time' : 0, 'invulnerable_time': 0, 'hit_image_swap':0, 'sound_run_cd': 0, 'range_attack_cd': 0}
 		self.timer_last = pygame.time.get_ticks()
 		self.delta_time = 0
 		self.lives = lives.Lives()
@@ -72,7 +72,7 @@ class Player(pygame.sprite.Sprite):
 			self.delta_time = now - self.timer_last;
 			self.timer_last = now
 			# tick cooldowns
-			utility.cooldown_tick(self.cooldowns, self.delta_time, {'hit_image_swap': self.hit_image_swap})
+			utility.cooldown_tick(self.cooldowns, self.delta_time, {'hit_image_swap': self.hit_image_swap, 'range_attack_cd': None})
 			# END InvulnerableBonus
 			self.updateInvulnerableBonus()
 			if not self.is_reflecting:
@@ -100,7 +100,7 @@ class Player(pygame.sprite.Sprite):
 					self.is_reflecting = True
 					self.sound_sword_hit.play()
 					self.reflect()
-				if keystate[pygame.K_LSHIFT]:
+				if keystate[pygame.K_LSHIFT] and self.cooldowns['range_attack_cd']==0:
 					self.create_haduken()	
 			if not self.on_ground:
 				self.speed_y += system.GRAVITY  
@@ -137,8 +137,8 @@ class Player(pygame.sprite.Sprite):
 		haduken = range_attack.RangeAttack(self.rect.centerx, self.rect.centery, self.direction)
 		self.all_sprites.add(haduken)
 		self.haduken_sprites.add(haduken)
-
-
+		self.cooldowns['range_attack_cd'] = system.HADUKEN_CD
+	
 	def reflect(self):
 		if (self.cooldowns['reflect_cd']==0):
 			self.cooldowns['reflect_cd']=system.PLAYER_REFLECT_CD
