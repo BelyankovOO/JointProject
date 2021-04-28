@@ -1,3 +1,4 @@
+"""JointProject NinjaSamurai."""
 import pygame
 import system
 import math
@@ -18,7 +19,17 @@ images['yellow_shuriken'].append(pygame.image.load(system.IMAGES_FOLDER + "bulle
 
 
 class EnemyWeapon(pygame.sprite.Sprite):
+    """
+    Enemy weapon class (suriken).
+
+    :param position: side of screen
+    :param y: coordinate of y
+    :param enemy_border: border of sprite
+    :param player_information: information about player
+    """
+
     def __init__(self, position, y, enemy_border, player_information):
+        """Init enemy weapon."""
         pygame.sprite.Sprite.__init__(self)
         self.image = images['shuriken'][0]
         self.mask = pygame.mask.from_surface(self.image)
@@ -51,6 +62,7 @@ class EnemyWeapon(pygame.sprite.Sprite):
         self.cooldowns = {'can_damage': 0, 'rotation': (system.SHURIKEN_ROTATION / self.velocity)}
 
     def update(self):
+        """Update enemy weapon."""
         now = pygame.time.get_ticks()
         self.delta_time = now - self.timer_last
         self.timer_last = now
@@ -61,6 +73,7 @@ class EnemyWeapon(pygame.sprite.Sprite):
         self.rect.x += self.speed_x
 
     def crossing(self):
+        """Check crossing of suriken and borders of screen."""
         if self.rect.top < 0:
             self.rect.top = 0
             self.speed_y = -self.speed_y
@@ -79,6 +92,11 @@ class EnemyWeapon(pygame.sprite.Sprite):
             self.can_damage = True
 
     def reflect_direction(self, colide_point_center):
+        """
+        Change direction of suriken.
+
+        :param colide_point_center: coordinate of reflected center
+        """
         L = [self.speed_x, self.speed_y]
         norm = [self.rect.x - colide_point_center[0], self.rect.y - colide_point_center[1]]
         s_norm = math.sqrt(norm[0]**2 + norm[1]**2)
@@ -91,13 +109,16 @@ class EnemyWeapon(pygame.sprite.Sprite):
         self.speed_y = s_L * norm[1]
 
     def reset_can_damage(self):
+        """Suriken again can damage."""
         self.can_damage = True
 
     def on_hit(self):
+        """Suriken cant damage."""
         self.can_damage = False
         self.cooldowns['can_damage'] = system.SHURIKEN_COOLDOWN_AFTER_REFLECT
 
     def image_rotation(self):
+        """Change image sprite."""
         if self.can_damage:
             self.image_num = (self.image_num + 1) % 5
             self.image = images['shuriken'][self.image_num]

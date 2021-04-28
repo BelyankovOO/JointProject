@@ -1,3 +1,4 @@
+"""JointProject NinjaSamurai."""
 import pygame
 import system
 import utility
@@ -8,7 +9,16 @@ images_haduken_len = len(images_haduken[0])
 
 
 class RangeAttack(pygame.sprite.Sprite):
+    """
+    Range attack class.
+
+    :param x: coordinate of x
+    :param y: coordinate of y
+    :param player_direction: left or right
+    """
+
     def __init__(self, x, y, player_direction):
+        """Init range attack."""
         pygame.sprite.Sprite.__init__(self)
         self.image = images_haduken[player_direction][0]
         self.mask = pygame.mask.from_surface(self.image)
@@ -26,6 +36,7 @@ class RangeAttack(pygame.sprite.Sprite):
             self.speed_x = system.HADUKEN_SPEED
 
     def update(self):
+        """Update range attack."""
         self.rect.centerx += self.speed_x
         if self.rect.left < 0 or self.rect.right > system.WIN_WIDTH:
             self.kill()
@@ -33,6 +44,7 @@ class RangeAttack(pygame.sprite.Sprite):
             self.start_animation()
 
     def start_animation(self):
+        """Animate range attack."""
         self.image_counter += 1 * system.HADUKEN_SPEED_ANIMATION
         im_counter = int(self.image_counter) % images_haduken_len
         self.image = images_haduken[self.haduken_direction][im_counter]

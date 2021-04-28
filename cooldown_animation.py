@@ -1,9 +1,20 @@
+"""JointProject NinjaSamurai."""
 import pygame
 import math
 
 
 class CooldownAnimation():
+    """
+    Cooldown animation class.
+
+    :param image: image of cooldown
+    :param copy_of_image: copy of cooldown image
+    :cooldown_time: time of cooldown
+    :position_on_screen: coordinates
+    """
+
     def __init__(self, image, copy_of_image, cooldown_time, position_on_screen):
+        """Init CooldownAnimation class."""
         pygame.sprite.Sprite.__init__(self)
         self.start_image = copy_of_image
         self.image = image
@@ -24,6 +35,7 @@ class CooldownAnimation():
         self.image.blit(self.alpha_surface, (0, 0))
 
     def update(self):
+        """Update Cooldown Animation Class."""
         if self.angle_of_rotation - 360 <= 270:
             self.angle_of_rotation += 1
             self.key_points.append((self.get_x_coordinate(self.radius, self.angle_of_rotation),
@@ -37,10 +49,27 @@ class CooldownAnimation():
             self.image.blit(self.start_image, (0, 0))
 
     def draw(self, screen):
+        """
+        Draw cooldown.
+
+        :param screen: main screen
+        """
         screen.blit(self.image, self.rect)
 
     def get_x_coordinate(self, radius, angle):
+        """
+        Get x coordinate for circle.
+
+        :param radius: radius of circle
+        :param angle: angle
+        """
         return self.rect.width / 2 + radius * math.cos(angle * math.pi / 180)
 
     def get_y_coordinate(self, radius, angle):
+        """
+        Get y coordinate for circle.
+
+        :param radius: radius of circle
+        :param angle: angle
+        """
         return self.rect.height / 2 + radius * math.sin(angle * math.pi / 180)
