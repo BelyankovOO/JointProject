@@ -12,9 +12,9 @@ import cooldown_animation
 import utility
 import bonuscreater
 
+sound_dir = system.SOUNDS_FOLDER + "background/"
+image_dir = system.IMAGES_FOLDER + "cooldown_animation/"
 
-sound_dir = system.SOUNDS_FOLDER+"background/"
-image_dir = system.IMAGES_FOLDER+"cooldown_animation/"
 ru = 'locales/ru_RU'
 en = 'locales/en_US'
 
@@ -23,16 +23,14 @@ copy_of_image_cooldown = utility.load_images_by_dir(image_dir)
 
 
 class Game():
-    """Application's main window class
-    """
+    """Application's main window class."""
+
     def __init__(self):
-        """Initialize pygame, create window, add title,
-        load settings, and other initializations 
-        """
-        pygame.init() # Инициация PyGame, обязательная строчка 
-        self.screen = pygame.display.set_mode(system.DISPLAY) # Создаем окошко
-        pygame.display.set_caption("NinjaSamurai") # Пишем в шапку
-        self.background = pygame.Surface((system.WIN_WIDTH,system.WIN_HEIGHT)) 
+        """Initialize pygame, create window, add title, load settings, and other initializations."""
+        pygame.init()
+        self.screen = pygame.display.set_mode(system.DISPLAY)
+        pygame.display.set_caption("NinjaSamurai")
+        self.background = pygame.Surface((system.WIN_WIDTH, system.WIN_HEIGHT))
         self.background.fill(pygame.Color(system.BACKGROUND_COLOR))
         self.timer = pygame.time.Clock()  
         self.font = pygame.font.SysFont("Arial", 18)
@@ -46,8 +44,8 @@ class Game():
         except(pygame.error):
             self.have_mixer=False
         self.game_control = {}
-        self.controlButtons={}
-        self.locale={}
+        self.controlButtons = {}
+        self.locale = {}
         self.load_settings()
         return
         
@@ -90,9 +88,7 @@ class Game():
         hero = player.Player(self.screen, all_sprites, haduken_sprites)
 
         cooldown_1 = cooldown_animation.CooldownAnimation(image_cooldown[0], copy_of_image_cooldown[0], 3, (system.WIN_WIDTH - 100, 40))
-        
-        #all_sprites.add(hero)
-        r,g,b,_    = pygame.Color(system.BACKGROUND_COLOR)
+        r, g, b, _ = pygame.Color(system.BACKGROUND_COLOR)
         for i in range(system.ENEMY_COUNT):
             mob = enemy.Enemy(all_sprites, enemys_sprites, enemy_bullet_sprites, hero)
             all_sprites.add(mob)
@@ -129,7 +125,6 @@ class Game():
             bonus_sprites.update()
             all_sprites.update()
             cooldown_1.update()
-      
             cooldown_1.draw(self.screen)
             bonus_creater.draw(self.screen)
             all_sprites.draw(self.screen)
@@ -180,7 +175,7 @@ class Game():
         return
     
     def menu_loop(self):
-        """Main menu loop."""
+        """Create Main menu loop."""
         w, h = pygame.display.get_surface().get_size()
         self.menu = pygame_menu.Menu('NinjaSamurai', w, h, theme=pygame_menu.themes.THEME_SOLARIZED)
         self.menu.add.button(self.locale['Play'], self.start_the_game)
@@ -191,9 +186,7 @@ class Game():
         return
 
     def load_settings(self):
-        """Load settings from 'profile' file. If the file does not exist,
-        then create new with default values.
-        """
+        """Load settings from 'profile' file. If the file does not exist, then create new with default values."""
         if os.path.isfile('profile'):
             file = open('profile')
             lines = file.readlines()
@@ -210,59 +203,55 @@ class Game():
             self.game_control['Up'] = pygame.key.key_code(lines[5].strip())
             self.game_control['Down'] = pygame.key.key_code(lines[6].strip())
             self.game_control['Space'] = pygame.key.key_code(lines[7].strip())
-            # language = lines[8].strip()
             self.language = lines[8].strip()
             self.load_locale()
             file.close()
         else:
-            file = open('profile','w')
+            file = open('profile', 'w')
             file.write("1\n1\n0.02\nleft\nright\nup\ndown\nspace\nlocale\n")
             file.close()
             self.load_settings()
         return
-    
+
     def load_locale(self):
         """Load localization's strings depending on the current settings."""
-        if (self.language=='locale'):
+        if (self.language == 'locale'):
             default, _ = locale.getdefaultlocale()
-            if default=='ru_RU':
+            if default == 'ru_RU':
                 language = default
             else:
                 language = 'en_US'
         else:
             language = self.language
-        
-        src_language=open(en,'r')
-        if language=='ru_RU':
-            file=open(ru,'r', encoding='utf-8')
+
+        src_language = open(en, 'r')
+        if language == 'ru_RU':
+            file = open(ru, 'r', encoding='utf-8')
         else:
-            file=open(en,'r')
-        
+            file = open(en, 'r')
         for element in src_language.readlines():
             line = element.strip()
             self.locale[line] = file.readline().strip()
         file.close()
         src_language.close()
-        
+
     def save_settings_to_file(self):
         """Save the current settings to the 'profile' file."""
-        file = open('profile','w')
-        file.write(str(self.difficulty)+'\n')
-        file.write(str(int(self.sound_in))+'\n')
-        file.write(str(self.sound_level)+'\n')
-        file.write(pygame.key.name(self.game_control['Left'])+'\n')
-        file.write(pygame.key.name(self.game_control['Right'])+'\n')
-        file.write(pygame.key.name(self.game_control['Up'])+'\n')
-        file.write(pygame.key.name(self.game_control['Down'])+'\n')
-        file.write(pygame.key.name(self.game_control['Space'])+'\n')
-        file.write(self.language+'\n')
+        file = open('profile', 'w')
+        file.write(str(self.difficulty) + '\n')
+        file.write(str(int(self.sound_in)) + '\n')
+        file.write(str(self.sound_level) + '\n')
+        file.write(pygame.key.name(self.game_control['Left']) + '\n')
+        file.write(pygame.key.name(self.game_control['Right']) + '\n')
+        file.write(pygame.key.name(self.game_control['Up']) + '\n')
+        file.write(pygame.key.name(self.game_control['Down']) + '\n')
+        file.write(pygame.key.name(self.game_control['Space']) + '\n')
+        file.write(self.language + '\n')
         file.close()
         return
     
     def save_setting(self):
-        """Save selected values in the main settings menu and 
-        reload them. After saving it leaves that menu.
-        """
+        """Save selected values in the main settings menu and reload them. After saving it leaves that menu."""
         data = self.menu.get_input_data()
         self.difficulty = data['difficulty'][1]
         self.save_settings_to_file()
@@ -285,21 +274,23 @@ class Game():
         return
 
     def setting_loop(self):
-        """Main settings loop."""
+        """Create Main settings loop."""
         w, h = pygame.display.get_surface().get_size()
         self.menu = pygame_menu.Menu(self.locale['Setting'], w, h, theme=pygame_menu.themes.THEME_SOLARIZED)
         self.menu.add.button(self.locale['Control'], self.start_control)
         self.menu.add.button(self.locale['Language'], self.start_locale)
-        items = [(self.locale['Easy'], self.locale['EASY']), (self.locale['Medium'], self.locale['MEDIUM']), (self.locale['Hard'], self.locale['HARD'])]
-        self.difficulty_selector = self.menu.add.selector( self.locale['Select difficulty']+':\t', items, selector_id='difficulty', default=self.difficulty)
-        
-        self.sound_switch = self.menu.add.toggle_switch(self.locale['Sound'], self.sound_in, onchange=self.change_sound, toggleswitch_id='sound_in_id')
+        items = [(self.locale['Easy'], self.locale['EASY']), (self.locale['Medium'],
+                 self.locale['MEDIUM']), (self.locale['Hard'], self.locale['HARD'])]
+        self.difficulty_selector = self.menu.add.selector(self.locale['Select difficulty'] + ':\t',
+                                                         items, selector_id='difficulty', default=self.difficulty)
+        self.sound_switch = self.menu.add.toggle_switch(self.locale['Sound'], self.sound_in,
+                                                         onchange=self.change_sound, toggleswitch_id='sound_in_id')
         self.menu.add.button(self.locale['Save'], self.save_setting)
         self.menu.add.button(self.locale['Default'], self.make_default_value)
         self.menu.add.button(self.locale['Back'], self.exit_to_main_menu)
         self.menu.mainloop(self.screen)
         return
-    
+
     def locale_loop(self):
         """Language selection loop."""
         w, h = pygame.display.get_surface().get_size()
@@ -309,31 +300,30 @@ class Game():
         self.menu.add.button('Русский', self.change_ru_RU)
         self.menu.add.button(self.locale['Back'], self.start_setting)
         self.menu.mainloop(self.screen)
-    
+
     def change_local(self):
         """Change the language to be selected by current environment locale."""
-        self.language='local'
+        self.language = 'local'
         self.save_settings_to_file()
         self.load_settings()
         self.start_setting()
-    
+
     def change_ru_RU(self):
         """Change the language to Russian"""
-        self.language='ru_RU'
+        self.language = 'ru_RU'
         self.save_settings_to_file()
         self.load_settings()
         self.start_setting()
-        
+
     def change_en_US(self):
         """Change the language to English"""
-        self.language='en_US'
+        self.language = 'en_US'
         self.save_settings_to_file()
         self.load_settings()
         self.start_setting()
-    
+
     def save_control(self):
-        """Save and reload the control changes. After that it leaves
-        to main settings menu."""
+        """Save and reload the control changes. After that it leaves to main settings menu."""
         self.save_settings_to_file()
         self.load_settings()
         self.start_setting()
@@ -436,20 +426,19 @@ class Game():
     def control_loop(self):
         """Control change menu loop."""
         w, h = pygame.display.get_surface().get_size()
-        
         self.menu = pygame_menu.Menu(self.locale['Control'], w, h, theme=pygame_menu.themes.THEME_SOLARIZED, columns=3, rows=5)
-        self.menu.add.label(self.locale['Run left']+':')
-        self.menu.add.label(self.locale['Run right']+':')
-        self.menu.add.label(self.locale['Jump']+':')
-        self.menu.add.label(self.locale['Charge']+':')
-        self.menu.add.label(self.locale['Attack']+':')
-        
-        self.controlButtons['Left']=self.menu.add.button(pygame.key.name(self.game_control['Left']), self.control_left)
-        self.controlButtons['Right']=self.menu.add.button(pygame.key.name(self.game_control['Right']), self.control_right)
-        self.controlButtons['Up']=self.menu.add.button(pygame.key.name(self.game_control['Up']), self.control_up)
-        self.controlButtons['Down']=self.menu.add.button(pygame.key.name(self.game_control['Down']), self.control_down)
-        self.controlButtons['Space']=self.menu.add.button(pygame.key.name(self.game_control['Space']), self.control_space)
-        
+        self.menu.add.label(self.locale['Run left'] + ':')
+        self.menu.add.label(self.locale['Run right'] + ':')
+        self.menu.add.label(self.locale['Jump'] + ':')
+        self.menu.add.label(self.locale['Charge'] + ':')
+        self.menu.add.label(self.locale['Attack'] + ':')
+
+        self.controlButtons['Left'] = self.menu.add.button(pygame.key.name(self.game_control['Left']), self.control_left)
+        self.controlButtons['Right'] = self.menu.add.button(pygame.key.name(self.game_control['Right']), self.control_right)
+        self.controlButtons['Up'] = self.menu.add.button(pygame.key.name(self.game_control['Up']), self.control_up)
+        self.controlButtons['Down'] = self.menu.add.button(pygame.key.name(self.game_control['Down']), self.control_down)
+        self.controlButtons['Space'] = self.menu.add.button(pygame.key.name(self.game_control['Space']), self.control_space)
+
         self.menu.add.button(self.locale['Save'], self.save_control)
         self.menu.add.button(self.locale['Default'], self.default_control)
         self.menu.add.button(self.locale['Back'], self.start_setting)
@@ -473,10 +462,10 @@ class Game():
     def win_loop(self):
         """Win menu loop."""
         w, h = pygame.display.get_surface().get_size()
-        self.menu = pygame_menu.Menu(self.locale['YOU WIN']+'! '+self.locale['YOUR TIME']+': '+f'{int(self.game_time // 60)}.{round(self.game_time % 60)} '
-                                     +self.locale['minutes'], w, h, theme=pygame_menu.themes.THEME_SOLARIZED)
-        self.menu.add_text_input('Name'+' :', maxchar=10, onreturn=self.save_best_score, input_underline_len=20)
-        # print(self.menu.get_value())
+        self.menu = pygame_menu.Menu(self.locale['YOU WIN'] + '! ' + self.locale['YOUR TIME'] +
+                                     ': ' + f'{int(self.game_time // 60)}.{round(self.game_time % 60)} ' +
+                                      self.locale['minutes'], w, h, theme=pygame_menu.themes.THEME_SOLARIZED)
+        self.menu.add_text_input('Name' + ' :', maxchar=10, onreturn=self.save_best_score, input_underline_len=20)
         self.menu.add.button(self.locale['Restart'], self.start_the_game)
         self.menu.add.button(self.locale['Leaderboard'], self.leaderboard_loop)
         self.menu.add.button(self.locale['Go to main menu'], self.exit_to_main_menu)
@@ -529,7 +518,7 @@ class Game():
         self.load_settings()
         self.menu.disable()
         return
-        
+
     def start_ladder(self):
         """Start the leaderboard loop"""
         self.running = False
@@ -537,14 +526,14 @@ class Game():
         self.load_settings()
         self.menu.disable()
         return
-        
+
     def set_game_exit(self):
         """Stop application"""
         self.running = False
         self.game_exit=True
         self.menu.disable()
         return
-    
+
     def start_locale(self):
         """Start the localization loop"""
         self.running = False
@@ -552,7 +541,7 @@ class Game():
         self.load_settings()
         self.menu.disable()
         return
-    
+
     def exit_to_main_menu(self):
         """Start the main menu loop"""
         self.running = False
