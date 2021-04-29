@@ -8,8 +8,6 @@ import system
 import player
 import enemy
 from leaderboard import Leaderboard
-import cooldown_animation
-import utility
 import bonuscreater
 
 sound_dir = system.SOUNDS_FOLDER + "background/"
@@ -20,9 +18,6 @@ image_dir = system.IMAGES_FOLDER + "cooldown_animation/"
 
 ru = 'locales/ru_RU'
 en = 'locales/en_US'
-
-image_cooldown = utility.load_images_by_dir(image_dir)
-copy_of_image_cooldown = utility.load_images_by_dir(image_dir)
 
 
 class Game():
@@ -93,8 +88,6 @@ class Game():
         self.background.fill(pygame.Color(system.BACKGROUND_COLOR))
         hero = player.Player(self.screen, all_sprites, haduken_sprites)
 
-        cooldown_1 = cooldown_animation.CooldownAnimation(image_cooldown[0], copy_of_image_cooldown[0], 3, (system.WIN_WIDTH - 100, 40))
-
         r, g, b, _ = pygame.Color(system.BACKGROUND_COLOR)
         for i in range(system.ENEMY_COUNT):
             mob = enemy.Enemy(all_sprites, enemys_sprites, enemy_bullet_sprites, hero)
@@ -130,11 +123,10 @@ class Game():
             hero.update(self.game_control)
             bonus_sprites.update()
             all_sprites.update()
-            cooldown_1.update()
 
-            cooldown_1.draw(self.screen)
             bonus_creater.draw(self.screen)
             all_sprites.draw(self.screen)
+            self.screen.blit(hero.cooldown_anim.image, hero.cooldown_anim.rect)
 
             if hero.drawable:
                 self.screen.blit(hero.image, hero.rect)

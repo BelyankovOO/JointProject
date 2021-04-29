@@ -5,6 +5,7 @@ import lives
 import system
 import utility
 import range_attack
+import cooldown_animation
 
 image_dir = system.IMAGES_FOLDER + "hero/"
 image_hero_cut_ratio = (0.09, 0.12)
@@ -22,6 +23,10 @@ images_fall = utility.load_images_by_dir_right(image_dir + "Martial/" + "Fall/")
 images_fall_len = len(images_fall[0])
 images_die = utility.load_images_by_dir_right(image_dir + "Martial/" + "Death/")
 images_die_len = len(images_die[0])
+
+image_dir_cooldown = system.IMAGES_FOLDER + "cooldown_animation/"
+image_cooldown = utility.load_images_by_dir(image_dir_cooldown)
+copy_of_image_cooldown = utility.load_images_by_dir(image_dir_cooldown)
 
 sound_dir = system.SOUNDS_FOLDER + "hero/"
 
@@ -72,6 +77,9 @@ class Player(pygame.sprite.Sprite):
         self.sound_jump = pygame.mixer.Sound(sound_dir + "jump.ogg")
         self.sound_hurt = pygame.mixer.Sound(sound_dir + "hurt.wav")
         self.sound_step = pygame.mixer.Sound(sound_dir + "step.ogg")
+        self.cooldown_anim = cooldown_animation.CooldownAnimation(image_cooldown[0], copy_of_image_cooldown[0],
+                                                                 system.HADUKEN_CD, (system.WIN_WIDTH - 100, 40))
+        self.cooldown_anim_flag = False
 
     def update(self, control):
         """
@@ -86,7 +94,8 @@ class Player(pygame.sprite.Sprite):
             now = pygame.time.get_ticks()
             self.delta_time = now - self.timer_last
             self.timer_last = now
-            utility.cooldown_tick(self.cooldowns, self.delta_time, {'hit_image_swap': self.hit_image_swap, 'range_attack_cd': None})
+            utility.cooldown_tick(self.cooldowns, self.delta_time, {'hit_image_swap': self.hit_image_swap,
+                                                                 'range_attack_cd': self.kick_cooldown_flag})
             self.updateInvulnerableBonus()
             if not self.is_reflecting:
                 if not (keystate[control['Left']] and keystate[control['Right']]):
@@ -127,6 +136,7 @@ class Player(pygame.sprite.Sprite):
             self.curr_state = 'dying'
             self.update_image()
         self.prev_state = self.curr_state
+        self.cooldown_anim.update(self.cooldown_anim_flag, self.cooldowns['range_attack_cd'])
 
     def crossing(self):
         """Check if PLayer leaving arena bounds.Correct positions and vertical speed if true."""
@@ -153,6 +163,11 @@ class Player(pygame.sprite.Sprite):
         self.all_sprites.add(haduken)
         self.haduken_sprites.add(haduken)
         self.cooldowns['range_attack_cd'] = system.HADUKEN_CD
+        self.cooldown_anim_flag = True
+
+    def kick_cooldown_flag(self):
+        """Kick Cookdown flag."""
+        self.cooldown_anim_flag = False
 
     def reflect(self):
         """Attack if it is not on cooldown."""
