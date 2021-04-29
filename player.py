@@ -27,7 +27,15 @@ sound_dir = system.SOUNDS_FOLDER + "hero/"
 
 
 class Player(pygame.sprite.Sprite):
+    """
+    Player's (main Hero) sprite class.
+
+    :param screen: application surface for drawing
+    :param all_sprites: list of existing game objects
+    :param haduken_sprites: list of range attack(haduken) game objects
+    """
     def __init__(self, screen, all_sprites, haduken_sprites):
+        """Create sprite and setup its attributes."""
         pygame.sprite.Sprite.__init__(self)
         self.image = images_idle[1][0]
         self.mask = pygame.mask.from_surface(self.image)
@@ -59,13 +67,16 @@ class Player(pygame.sprite.Sprite):
         self.dying = False
         self.all_sprites = all_sprites
         self.haduken_sprites = haduken_sprites
-
         self.sound_sword_hit = pygame.mixer.Sound(os.path.join(sound_dir, "sword_hit.flac"))
         self.sound_jump = pygame.mixer.Sound(sound_dir + "jump.ogg")
         self.sound_hurt = pygame.mixer.Sound(sound_dir + "hurt.wav")
         self.sound_step = pygame.mixer.Sound(sound_dir + "step.ogg")
 
     def update(self, control):
+        """Update state of the player object.
+        
+        :param control: the map of control keys.
+        """
         if (not self.dying):
             self.speed_x = 0
             self.lives.draw(self.screen)
@@ -116,6 +127,9 @@ class Player(pygame.sprite.Sprite):
         self.prev_state = self.curr_state
 
     def crossing(self):
+        """Check if PLayer leaving arena bounds.
+        Correct positions and vertical speed if true.
+        """
         bottom = self.rect.centery + self.ver_offset
         top = self.rect.centery - self.ver_offset
         left = self.rect.centerx - self.hor_offset
@@ -134,16 +148,19 @@ class Player(pygame.sprite.Sprite):
             self.speed_y = 0
 
     def create_haduken(self):
+        """Create an instance of range attack(haduken)."""
         haduken = range_attack.RangeAttack(self.rect.centerx, self.rect.centery, self.direction)
         self.all_sprites.add(haduken)
         self.haduken_sprites.add(haduken)
         self.cooldowns['range_attack_cd'] = system.HADUKEN_CD
 
     def reflect(self):
+        """Attack if it is not on cooldown."""
         if self.cooldowns['reflect_cd'] == 0:
             self.cooldowns['reflect_cd'] = system.PLAYER_REFLECT_CD
 
     def update_image(self):
+        """Change the image of Player's sprite depending on his current state."""
         if self.prev_state != self.curr_state:
             self.image_counter = 0
         self.is_last_attack_frame = False
@@ -189,6 +206,7 @@ class Player(pygame.sprite.Sprite):
                 self.dead = True
 
     def invulnerable(self):
+        """Make the Player invulnerable for a shrot time."""
         self.mask = pygame.mask.from_surface(self.image)
         self.cooldowns['invulnerable_time'] = system.PLAYER_INVULNERABLE_TIME
         self.cooldowns['hit_image_swap'] = system.PLAYER_ANIMATION_FLICKER_ROTATION
@@ -196,12 +214,16 @@ class Player(pygame.sprite.Sprite):
         self.drawable = False
 
     def isInvulnerable(self):
+        """Check if the Player is invulnerable at this moment."""
         return self.cooldowns['invulnerable_time'] > 0
 
     def isAlive(self):
+
+        """Check if the Player is alive at this moment."""
         return not self.dead
 
     def hit_image_swap(self):
+        """Change the drawable attribute to produce flickering animation effect."""
         if self.cooldowns['invulnerable_time'] > 0:
             self.drawable = not self.drawable
             self.cooldowns['hit_image_swap'] = system.PLAYER_ANIMATION_FLICKER_ROTATION
@@ -209,12 +231,15 @@ class Player(pygame.sprite.Sprite):
             self.drawable = True
 
     def getCenter(self):
+        """Return center of Player's sprite"""
         return (self.rect.centerx, self.rect.centery)
 
     def get_player_information(self):
+        """Return some information about Player's postion"""
         return (self.rect.centerx, self.rect.centery + 1.2 * self.ver_offset, self.direction)
 
     def getDamage(self):
+        """Cause damage to the Player."""
         self.lives.decrease_number_of_lives()
         if not self.dying:
             if self.lives.check_number_of_of_lives() > 0:
@@ -223,9 +248,11 @@ class Player(pygame.sprite.Sprite):
                 self.dying = True
 
     def getLifeBonus(self):
+        """Regenerate one life."""
         self.lives.increase_number_of_lives()
 
     def getInvulnerableBonus(self):
+        """Add invulnerability for the shor time."""
         self.mask = pygame.mask.from_surface(self.image)
         self.cooldowns['invulnerable_time'] = system.BONUS_INVULNERABLE_TIME
         self.cooldowns['hit_image_swap'] = system.PLAYER_ANIMATION_FLICKER_ROTATION
@@ -233,5 +260,6 @@ class Player(pygame.sprite.Sprite):
         self.have_InvulnerableBonus = True
 
     def updateInvulnerableBonus(self):
+        """Update status of the invulnerability bonus effect."""
         if self.have_InvulnerableBonus and not self.isInvulnerable():
             self.have_InvulnerableBonus = False

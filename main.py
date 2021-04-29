@@ -12,9 +12,12 @@ import cooldown_animation
 import utility
 import bonuscreater
 
+sound_dir = system.SOUNDS_FOLDER + "background/"
+image_dir = system.IMAGES_FOLDER + "cooldown_animation/"
 
 sound_dir = system.SOUNDS_FOLDER + "background/"
 image_dir = system.IMAGES_FOLDER + "cooldown_animation/"
+
 ru = 'locales/ru_RU'
 en = 'locales/en_US'
 
@@ -32,7 +35,9 @@ class Game():
         pygame.display.set_caption("NinjaSamurai")
         self.background = pygame.Surface((system.WIN_WIDTH, system.WIN_HEIGHT))
         self.background.fill(pygame.Color(system.BACKGROUND_COLOR))
+
         self.timer = pygame.time.Clock()
+
         self.font = pygame.font.SysFont("Arial", 18)
         self.game_state = 'menu'
         self.game_exit = False
@@ -43,6 +48,7 @@ class Game():
             self.have_mixer = True
         except(pygame.error):
             self.have_mixer = False
+
         self.game_control = {}
         self.controlButtons = {}
         self.locale = {}
@@ -138,6 +144,7 @@ class Game():
             enemy_hits = pygame.sprite.groupcollide(enemys_sprites, enemy_bullet_sprites, False, False, collided=pygame.sprite.collide_mask)
             hero_bonus_hits = pygame.sprite.spritecollide(hero, bonus_sprites, False, collided=pygame.sprite.collide_mask)
             pygame.sprite.groupcollide(enemys_sprites, haduken_sprites, True, True, collided=pygame.sprite.collide_mask)
+
             if enemy_hits:
                 for nindja in enemy_hits.keys():
                     for bullet in enemy_hits[nindja]:
