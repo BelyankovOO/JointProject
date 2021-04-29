@@ -34,6 +34,7 @@ class Player(pygame.sprite.Sprite):
     :param all_sprites: list of existing game objects
     :param haduken_sprites: list of range attack(haduken) game objects
     """
+
     def __init__(self, screen, all_sprites, haduken_sprites):
         """Create sprite and setup its attributes."""
         pygame.sprite.Sprite.__init__(self)
@@ -73,8 +74,9 @@ class Player(pygame.sprite.Sprite):
         self.sound_step = pygame.mixer.Sound(sound_dir + "step.ogg")
 
     def update(self, control):
-        """Update state of the player object.
-        
+        """
+        Update state of the player object.
+
         :param control: the map of control keys.
         """
         if (not self.dying):
@@ -127,9 +129,7 @@ class Player(pygame.sprite.Sprite):
         self.prev_state = self.curr_state
 
     def crossing(self):
-        """Check if PLayer leaving arena bounds.
-        Correct positions and vertical speed if true.
-        """
+        """Check if PLayer leaving arena bounds.Correct positions and vertical speed if true."""
         bottom = self.rect.centery + self.ver_offset
         top = self.rect.centery - self.ver_offset
         left = self.rect.centerx - self.hor_offset
@@ -218,7 +218,6 @@ class Player(pygame.sprite.Sprite):
         return self.cooldowns['invulnerable_time'] > 0
 
     def isAlive(self):
-
         """Check if the Player is alive at this moment."""
         return not self.dead
 
