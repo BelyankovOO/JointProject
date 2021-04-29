@@ -2,8 +2,23 @@
 pygame 2.0.1 (SDL 2.0.14, Python 3.9.2)
 Hello from the pygame community. https://www.pygame.org/contribute.html
 pygame-menu 4.0.2
->>>	import player
->>>	player = player.Player(None, None, None)
+>>> import utility
+>>> import system
+>>> image_dir = system.IMAGES_FOLDER + "range_attack/"
+>>> utility.load_images_by_dir_right(image_dir) 
+[[<Surface(40x20x32 SW)>, <Surface(40x20x32 SW)>, <Surface(45x20x32 SW)>, <Surface(50x20x32 SW)>, <Surface(45x20x32 SW)>, <Surface(40x20x32 SW)>], [<Surface(40x20x32 SW)>, <Surface(40x20x32 SW)>, <Surface(45x20x32 SW)>, <Surface(50x20x32 SW)>, <Surface(45x20x32 SW)>, <Surface(40x20x32 SW)>]]
+>>> utility.load_images_by_dir(image_dir)
+[<Surface(40x20x32 SW)>, <Surface(40x20x32 SW)>, <Surface(45x20x32 SW)>, <Surface(50x20x32 SW)>, <Surface(45x20x32 SW)>, <Surface(40x20x32 SW)>]
+>>> vector = (20, 30) 
+>>> utility.vector_normalization(vector)
+(0.5547001962252291, 0.8320502943378437)
+>>> import lives
+>>> live = lives.Lives()
+>>> live.check_number_of_of_lives()
+3
+>>> live.increase_number_of_lives()
+>>> live.check_number_of_of_lives()
+4
 
 
 
