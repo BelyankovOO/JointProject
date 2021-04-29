@@ -12,9 +12,9 @@ import cooldown_animation
 import utility
 import bonuscreater
 
-
 sound_dir = system.SOUNDS_FOLDER + "background/"
 image_dir = system.IMAGES_FOLDER + "cooldown_animation/"
+
 ru = 'locales/ru_RU'
 en = 'locales/en_US'
 
@@ -32,23 +32,23 @@ class Game():
         pygame.display.set_caption("NinjaSamurai")
         self.background = pygame.Surface((system.WIN_WIDTH, system.WIN_HEIGHT))
         self.background.fill(pygame.Color(system.BACKGROUND_COLOR))
-        self.timer = pygame.time.Clock()
+        self.timer = pygame.time.Clock()  
         self.font = pygame.font.SysFont("Arial", 18)
         self.game_state = 'menu'
         self.game_exit = False
         self.leaderboard = Leaderboard()
         try:
-            self.background_music = pygame.mixer.music.load(sound_dir + "background.mp3")
+            self.background_music = pygame.mixer.music.load(sound_dir+"background.mp3")
             pygame.mixer.music.play(loops=-1)
-            self.have_mixer = True
+            self.have_mixer=True
         except(pygame.error):
-            self.have_mixer = False
+            self.have_mixer=False
         self.game_control = {}
         self.controlButtons = {}
         self.locale = {}
         self.load_settings()
         return
-
+        
     def run(self):
         """Start infinite loop of the application."""
         while (not self.game_exit):
@@ -69,13 +69,13 @@ class Game():
             elif self.game_state == 'round_win':
                 self.win_loop()
         return
-
+        
     def update_fps(self):
         """Update value of the fps counter."""
         fps = str(int(self.timer.get_fps()))
         fps_text = self.font.render(fps, 1, pygame.Color("coral"))
         return fps_text
-
+        
     def game_loop(self):
         """Start infinite loop of a game."""
         all_sprites = pygame.sprite.Group()
@@ -88,15 +88,15 @@ class Game():
         hero = player.Player(self.screen, all_sprites, haduken_sprites)
 
         cooldown_1 = cooldown_animation.CooldownAnimation(image_cooldown[0], copy_of_image_cooldown[0], 3, (system.WIN_WIDTH - 100, 40))
-
         r, g, b, _ = pygame.Color(system.BACKGROUND_COLOR)
         for i in range(system.ENEMY_COUNT):
             mob = enemy.Enemy(all_sprites, enemys_sprites, enemy_bullet_sprites, hero)
             all_sprites.add(mob)
             enemys_sprites.add(mob)
 
+        #Bonus
         bonus_creater = bonuscreater.BonusCreater(hero, bonus_sprites)
-
+        
         self.running = True
         self.start_time = pygame.time.get_ticks()
         while self.running and not self.game_exit:
@@ -108,16 +108,16 @@ class Game():
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.pause_menu_loop()
-
+            
             if hero.dying:
-                r += 10 * system.COLOR_FILL_SPEED
-                if (r > 255):
+                r+=10*system.COLOR_FILL_SPEED
+                if (r>255):
                     r = 255
-                g = g * system.COLOR_FILL_SPEED
-                b = b * system.COLOR_FILL_SPEED
-                self.background.fill((r, g, b))
-            self.screen.blit(self.background, (0, 0))
-            self.screen.blit(self.update_fps(), (10, 0))
+                g = g*system.COLOR_FILL_SPEED
+                b = b*system.COLOR_FILL_SPEED
+                self.background.fill((r,g,b))
+            self.screen.blit(self.background, (0,0))
+            self.screen.blit(self.update_fps(), (10,0))
 
             bonus_creater.create_bonus()
 
@@ -125,19 +125,18 @@ class Game():
             bonus_sprites.update()
             all_sprites.update()
             cooldown_1.update()
-
             cooldown_1.draw(self.screen)
             bonus_creater.draw(self.screen)
             all_sprites.draw(self.screen)
-
+      
             if hero.drawable:
                 self.screen.blit(hero.image, hero.rect)
             pygame.display.update()
-
+            
             hero_bullets_hits = pygame.sprite.spritecollide(hero, enemy_bullet_sprites, False, collided=pygame.sprite.collide_mask)
             enemy_hits = pygame.sprite.groupcollide(enemys_sprites, enemy_bullet_sprites, False, False, collided=pygame.sprite.collide_mask)
             hero_bonus_hits = pygame.sprite.spritecollide(hero, bonus_sprites, False, collided=pygame.sprite.collide_mask)
-            pygame.sprite.groupcollide(enemys_sprites, haduken_sprites, True, True, collided=pygame.sprite.collide_mask)
+            haduken_hits = pygame.sprite.groupcollide(enemys_sprites, haduken_sprites, True, True, collided=pygame.sprite.collide_mask)
             if enemy_hits:
                 for nindja in enemy_hits.keys():
                     for bullet in enemy_hits[nindja]:
@@ -147,12 +146,12 @@ class Game():
 
             if hero_bullets_hits:
                 if hero.is_reflecting or hero.have_InvulnerableBonus:
-                    for bullet in hero_bullets_hits:
+                    for bullet in hero_bullets_hits :
                         if bullet.can_damage:
                             bullet.reflect_direction(hero.getCenter())
                             bullet.on_hit()
                 elif not hero.isInvulnerable():
-                    for bullet in hero_bullets_hits:
+                    for bullet in hero_bullets_hits :
                         if bullet.can_damage:
                             hero.getDamage()
                             bullet.kill()
@@ -163,7 +162,7 @@ class Game():
 
             if not hero.isAlive():
                 self.running = False
-                self.game_state = 'game_over'
+                self.game_state='game_over'
                 break
 
             if len(enemys_sprites) == 0:
@@ -172,8 +171,9 @@ class Game():
                 self.game_time = (self.end_time - self.start_time) / 1000
                 self.game_state = 'round_win'
                 break
+            
         return
-
+    
     def menu_loop(self):
         """Create Main menu loop."""
         w, h = pygame.display.get_surface().get_size()
@@ -190,7 +190,7 @@ class Game():
         if os.path.isfile('profile'):
             file = open('profile')
             lines = file.readlines()
-            self.difficulty = int(lines[0].strip())
+            self.difficulty=int(lines[0].strip())
             self.sound_in = bool(int(lines[1].strip()))
             self.sound_level = float(lines[2].strip())
             if self.have_mixer:
@@ -229,7 +229,6 @@ class Game():
             file = open(ru, 'r', encoding='utf-8')
         else:
             file = open(en, 'r')
-
         for element in src_language.readlines():
             line = element.strip()
             self.locale[line] = file.readline().strip()
@@ -250,7 +249,7 @@ class Game():
         file.write(self.language + '\n')
         file.close()
         return
-
+    
     def save_setting(self):
         """Save selected values in the main settings menu and reload them. After saving it leaves that menu."""
         data = self.menu.get_input_data()
@@ -343,12 +342,12 @@ class Game():
         self.game_control['Space'] = pygame.key.key_code('space')
         self.controlButtons['Space']._title = 'space'
         return
-
+    
     def control_up(self):
         """Set the jump control button."""
         ok = True
         while ok:
-            events = pygame.event.get()
+            events = pygame.event.get();
             for event in events:
                 if event.type == pygame.KEYDOWN:
                     if (event.key == pygame.K_ESCAPE):
@@ -359,12 +358,12 @@ class Game():
                     ok = False
                     break
         return
-
+    
     def control_down(self):
         """Set the charge control button."""
         ok = True
         while ok:
-            events = pygame.event.get()
+            events = pygame.event.get();
             for event in events:
                 if event.type == pygame.KEYDOWN:
                     if (event.key == pygame.K_ESCAPE):
@@ -375,12 +374,12 @@ class Game():
                     ok = False
                     break
         return
-
+    
     def control_left(self):
         """Set the left run control button."""
         ok = True
         while ok:
-            events = pygame.event.get()
+            events = pygame.event.get();
             for event in events:
                 if event.type == pygame.KEYDOWN:
                     if (event.key == pygame.K_ESCAPE):
@@ -391,12 +390,12 @@ class Game():
                     ok = False
                     break
         return
-
+    
     def control_right(self):
         """Set the right run control button."""
         ok = True
         while ok:
-            events = pygame.event.get()
+            events = pygame.event.get();
             for event in events:
                 if event.type == pygame.KEYDOWN:
                     if (event.key == pygame.K_ESCAPE):
@@ -407,12 +406,12 @@ class Game():
                     ok = False
                     break
         return
-
+    
     def control_space(self):
         """Set the attack control button."""
         ok = True
         while ok:
-            events = pygame.event.get()
+            events = pygame.event.get();
             for event in events:
                 if event.type == pygame.KEYDOWN:
                     if (event.key == pygame.K_ESCAPE):
@@ -423,7 +422,7 @@ class Game():
                     ok = False
                     break
         return
-
+        
     def control_loop(self):
         """Control change menu loop."""
         w, h = pygame.display.get_surface().get_size()
@@ -486,7 +485,7 @@ class Game():
         self.menu.add.button(self.locale['Quit'], self.set_game_exit)
         self.menu.mainloop(self.screen)
         return
-
+    
     def pause_menu_loop(self):
         """In game pause menu loop."""
         w, h = pygame.display.get_surface().get_size()
@@ -496,11 +495,11 @@ class Game():
         self.menu.add.button(self.locale['Go to main menu'], self.exit_to_main_menu)
         self.menu.add.button(self.locale['Quit'], self.set_game_exit)
         self.menu.mainloop(self.screen)
-
+    
     def start_the_game(self):
         """Start game loop"""
         self.running = False
-        self.game_state = 'game'
+        self.game_state='game'
         self.menu.disable()
         return
 
@@ -531,7 +530,7 @@ class Game():
     def set_game_exit(self):
         """Stop application"""
         self.running = False
-        self.game_exit = True
+        self.game_exit=True
         self.menu.disable()
         return
 
@@ -546,12 +545,11 @@ class Game():
     def exit_to_main_menu(self):
         """Start the main menu loop"""
         self.running = False
-        self.game_state = 'menu'
+        self.game_state='menu'
         self.load_settings()
         self.menu.disable()
         return
-
-
+    
 if __name__ == "__main__":
     game = Game()
     game.run()
