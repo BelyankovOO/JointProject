@@ -20,7 +20,7 @@ class Enemy(pygame.sprite.Sprite):
     :param enemy_bullet_sprites: group of enemy bullet sprites
     :param player: controlled model
     """
-    
+
     def __init__(self, all_sprites, enemy_sprites, enemy_bullet_sprites, player):
         """Enemy init."""
         pygame.sprite.Sprite.__init__(self)
